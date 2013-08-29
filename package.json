@@ -13,7 +13,7 @@
   "main": "./lib/passport-facebook-token",
   "dependencies": {
     "pkginfo": "0.2.x",
-    "passport-oauth": "~0.1.2"
+    "passport-oauth": "0.1.x"
   },
   "engines": { "node": ">= 0.4.0" },
   "licenses": [ {
