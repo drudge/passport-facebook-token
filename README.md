@@ -1,6 +1,6 @@
 # Passport-Facebook-Token
 
-[Passport](http://passportjs.org/) strategy for authenticating with [Facebook](http://www.facebook.com/) 
+[Passport](http://passportjs.org/) strategy for authenticating with [Facebook](http://www.facebook.com/)
 access tokens using the OAuth 2.0 API.
 
 This module lets you authenticate using Facebook in your Node.js applications.
@@ -32,6 +32,20 @@ accepts these credentials and calls `done` providing a user, as well as
         });
       }
     ));
+
+#### Authenticate Requests
+
+Use `passport.authenticate()`, specifying the `'facebook-token'` strategy, to authenticate requests.
+
+    app.post('/auth/facebook/token',
+      passport.authenticate('facebook-token'),
+      function (req, res) {
+        // do something with req.user
+        res.send(req.user? 200 : 401);
+      }
+    );
+
+The post request to this route should include a JSON object with the keys `access_token` and optionally, `refresh_token` set to the credentials you receive from facebook.
 
 ## Credits
 
