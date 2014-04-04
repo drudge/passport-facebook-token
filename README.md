@@ -22,28 +22,32 @@ account and OAuth 2.0 tokens.  The strategy requires a `verify` callback, which
 accepts these credentials and calls `done` providing a user, as well as
 `options` specifying a app ID and app secret.
 
-    passport.use(new FacebookTokenStrategy({
-        clientID: FACEBOOK_APP_ID,
-        clientSecret: FACEBOOK_APP_SECRET
-      },
-      function(accessToken, refreshToken, profile, done) {
-        User.findOrCreate({ facebookId: profile.id }, function (err, user) {
-          return done(err, user);
-        });
-      }
-    ));
+```js
+passport.use(new FacebookTokenStrategy({
+    clientID: FACEBOOK_APP_ID,
+    clientSecret: FACEBOOK_APP_SECRET
+  },
+  function(accessToken, refreshToken, profile, done) {
+    User.findOrCreate({ facebookId: profile.id }, function (err, user) {
+      return done(err, user);
+    });
+  }
+));
+```
 
 #### Authenticate Requests
 
 Use `passport.authenticate()`, specifying the `'facebook-token'` strategy, to authenticate requests.
 
-    app.post('/auth/facebook/token',
-      passport.authenticate('facebook-token'),
-      function (req, res) {
-        // do something with req.user
-        res.send(req.user? 200 : 401);
-      }
-    );
+```js
+app.post('/auth/facebook/token',
+  passport.authenticate('facebook-token'),
+  function (req, res) {
+    // do something with req.user
+    res.send(req.user? 200 : 401);
+  }
+);
+```
 
 The post request to this route should include a JSON object with the keys `access_token` and optionally, `refresh_token` set to the credentials you receive from facebook.
 
