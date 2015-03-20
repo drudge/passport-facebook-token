@@ -4,8 +4,5 @@ node_js:
   - '0.11'
   - '0.12'
   - 'iojs'
-before_install:
-  - currentfolder="${PWD##*/}"
-  - if [ "$currentfolder" != 'generator-sails-rest-api' ]; then cd .. && eval "mv $currentfolder generator-sails-rest-api" && cd generator-sails-rest-api; fi
 after_script:
   - npm install coveralls && cat ./coverage/lcov.info | coveralls
