@@ -18,7 +18,7 @@ describe('FacebookTokenStrategy:init', function () {
         });
 
         assert.equal(strategy.name, 'facebook-token');
-        assert(strategy._oauth2._useAuthorizationHeaderForGET);
+        assert.equal(strategy._oauth2._useAuthorizationHeaderForGET, false);
     });
 });
 
