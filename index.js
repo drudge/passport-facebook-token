@@ -1,5 +1,5 @@
-var pkginfo = require('pkginfo'),
-    Strategy = require('./lib/Strategy');
+var pkginfo = require('pkginfo');
+var Strategy = require('./lib/strategy');
 
 pkginfo(module, 'version');
 
