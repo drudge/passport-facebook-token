@@ -1,24 +1,47 @@
 {
-  "name": "passport-facebook-token",
-  "version": "0.4.0",
-  "description": "Facebook token authentication strategy for Passport.",
-  "author": { "name": "Nicholas Penree", "email": "nick@penree.com", "url": "http://www.penree.com/" },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/drudge/passport-facebook-token.git"
-  },
-  "bugs": {
-    "url": "http://github.com/drudge/passport-facebook-token/issues"
-  },
-  "main": "./lib/passport-facebook-token",
-  "dependencies": {
-    "pkginfo": "0.2.x",
-    "passport-oauth": "0.1.x"
-  },
-  "engines": { "node": ">= 0.4.0" },
-  "licenses": [ {
-    "type": "MIT",
-    "url": "http://www.opensource.org/licenses/MIT" 
-  } ],
-  "keywords": ["passport", "facebook", "auth", "authn", "authentication", "identity"]
+    "name": "passport-facebook-token",
+    "version": "1.0.0",
+    "description": "Facebook token authentication strategy for Passport",
+    "main": "index.js",
+    "scripts": {
+        "test": "istanbul cover --report lcovonly _mocha ./test/**/*.test.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/drudge/passport-facebook-token.git"
+    },
+    "keywords": [
+        "passport",
+        "facebook",
+        "auth",
+        "authn",
+        "authentication",
+        "identity"
+    ],
+    "author": {
+        "name": "Nicholas Penree",
+        "email": "nick@penree.com",
+        "url": "http://www.penree.com/"
+    },
+    "contributors": [
+        {
+            "name": "Eugene Obrezkov",
+            "email": "ghaiklor@gmail.com",
+            "url:": "https://www.facebook.com/ghaiklor"
+        }
+    ],
+    "license": "MIT",
+    "bugs": {
+        "url": "http://github.com/drudge/passport-facebook-token/issues"
+    },
+    "dependencies": {
+        "passport-oauth": "^1.0.0",
+        "pkginfo": "^0.3.0"
+    },
+    "devDependencies": {
+        "chai": "^2.1.2",
+        "chai-passport-strategy": "^0.2.0",
+        "istanbul": "^0.3.8",
+        "mocha": "^2.2.1"
+    }
 }

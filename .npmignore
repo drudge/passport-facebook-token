@@ -1,8 +1,5 @@
-*.md
-.DS_Store
-.git*
-Makefile
-docs/
-examples/
-support/
-test/
+coverage
+test
+.editorconfig
+.gitignore
+.travis.yml
