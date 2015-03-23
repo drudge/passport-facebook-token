@@ -54,6 +54,7 @@ function FacebookTokenStrategy(options, verify) {
   this._clientSecret = options.clientSecret;
   this._enableProof = options.enableProof;
   this._profileFields = options.profileFields || null;
+  this._returnRawData = (options.returnRawData === undefined) ? true : !!options.returnRawData;
   this._oauth2._useAuthorizationHeaderForGET = false;
 }
 
@@ -168,9 +169,12 @@ FacebookTokenStrategy.prototype.userProfile = function (accessToken, done) {
           photos: [{
             value: ['https://graph.facebook.com/', json.id, '/picture?type=large'].join('')
           }],
-          _raw: body,
           _json: json
         };
+      
+      if (this._returnRawData) {
+        profile._raw = body
+      }
 
       done(null, profile);
     } catch (e) {
