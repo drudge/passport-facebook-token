@@ -1,0 +1,18 @@
+{
+  "data": [
+  {
+      "id": "1374805279512610",
+      "name": "Mike Amididebajeh Okelolastein"
+  },
+  {
+      "id": "1374508039542648",
+      "name": "Mike Amiejcidjfcc Bushakberg"
+  }
+  ], 
+  "paging": {
+    "previous": "https://graph.facebook.com/794955667239296/friends?limit=25&offset=0"
+  }, 
+  "summary": {
+    "total_count": 10
+  }
+}
