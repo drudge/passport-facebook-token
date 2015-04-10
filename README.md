@@ -1,7 +1,8 @@
-# passport-facebook-token 
+# passport-facebook-token
 
 [![Build Status](https://travis-ci.org/drudge/passport-facebook-token.svg)](https://travis-ci.org/drudge/passport-facebook-token)
 [![Dependency Status](https://david-dm.org/drudge/passport-facebook-token.svg)](https://david-dm.org/drudge/passport-facebook-token)
+[![Coverage Status](https://coveralls.io/repos/drudge/passport-facebook-token/badge.svg)](https://coveralls.io/r/drudge/passport-facebook-token)
 
 [Passport](http://passportjs.org/) strategy for authenticating with [Facebook](http://www.facebook.com/)
 access tokens using the OAuth 2.0 API.
