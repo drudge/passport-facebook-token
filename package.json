@@ -1,6 +1,6 @@
 {
     "name": "passport-facebook-token",
-    "version": "1.0.1",
+    "version": "2.0.0",
     "description": "Facebook token authentication strategy for Passport",
     "main": "index.js",
     "scripts": {
@@ -35,8 +35,7 @@
         "url": "http://github.com/drudge/passport-facebook-token/issues"
     },
     "dependencies": {
-        "passport-oauth": "^1.0.0",
-        "pkginfo": "^0.3.0"
+        "passport-oauth2": "^1.0.0"
     },
     "devDependencies": {
         "chai": "^2.1.2",
