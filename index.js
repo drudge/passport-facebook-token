@@ -159,6 +159,7 @@ FacebookTokenStrategy.prototype.userProfile = function(accessToken, done) {
             givenName: json.first_name || '',
             middleName: json.middle_name || ''
           },
+          gender: json.gender || '',
           emails: [{
             value: json.email || ''
           }],
