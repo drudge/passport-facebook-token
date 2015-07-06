@@ -47,6 +47,8 @@ function FacebookTokenStrategy(options, verify) {
   OAuth2Strategy.call(this, options, verify);
 
   this.name = 'facebook-token';
+  this._accessTokenField = options.accessTokenField || 'access_token';
+  this._refreshTokenField = options.refreshTokenField || 'refresh_token';
   this._passReqToCallback = options.passReqToCallback;
   this._profileURL = options.profileURL || 'https://graph.facebook.com/v2.2/me';
   this._clientSecret = options.clientSecret;
@@ -63,8 +65,8 @@ function FacebookTokenStrategy(options, verify) {
  */
 FacebookTokenStrategy.prototype.authenticate = function(req, options) {
   var self = this;
-  accessToken = (req.body && req.body.access_token) || (req.query && req.query.access_token) || (req.headers && req.headers.access_token),
-  refreshToken = (req.body && req.body.refresh_token) || (req.query && req.query.refresh_token) || (req.headers && req.headers.refresh_token);
+  accessToken = (req.body && req.body[self._accessTokenField]) || (req.query && req.query[self._accessTokenField]) || (req.headers && req.headers[self._accessTokenField]),
+  refreshToken = (req.body && req.body[self._refreshTokenField]) || (req.query && req.query[self._refreshTokenField]) || (req.headers && req.headers[self._refreshTokenField]);
 
   if (!accessToken) {
     return this.fail({
