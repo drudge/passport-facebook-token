@@ -75,7 +75,7 @@ FacebookTokenStrategy.prototype.authenticate = function(req, options) {
   }
 
   self._loadUserProfile(accessToken, function(error, profile) {
-    if (error) return self.fail(error);
+    if (error) return self.error(error);
 
     function verified(error, user, info) {
       if (error) return self.error(error);
