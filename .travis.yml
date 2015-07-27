@@ -6,4 +6,4 @@ node_js:
   - '0.12'
   - 'iojs'
 after_script:
-  - npm install coveralls && cat ./coverage/lcov.info | coveralls
+  - npm install coveralls && npm run coveralls

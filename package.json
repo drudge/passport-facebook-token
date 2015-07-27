@@ -4,7 +4,8 @@
   "description": "Facebook token authentication strategy for Passport",
   "main": "index.js",
   "scripts": {
-    "test": "istanbul cover _mocha ./test/**/*.test.js"
+    "test": "istanbul cover _mocha ./test/**/*.test.js",
+    "coveralls": "cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
     "type": "git",
