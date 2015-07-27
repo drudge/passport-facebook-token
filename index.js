@@ -63,10 +63,10 @@ function FacebookTokenStrategy(options, verify) {
  * @param {Object} options
  * @api protected
  */
-FacebookTokenStrategy.prototype.authenticate = function(req, options) {
+FacebookTokenStrategy.prototype.authenticate = function (req, options) {
   var self = this;
-  accessToken = (req.body && req.body[self._accessTokenField]) || (req.query && req.query[self._accessTokenField]) || (req.headers && req.headers[self._accessTokenField]),
-  refreshToken = (req.body && req.body[self._refreshTokenField]) || (req.query && req.query[self._refreshTokenField]) || (req.headers && req.headers[self._refreshTokenField]);
+  var accessToken = (req.body && req.body[self._accessTokenField]) || (req.query && req.query[self._accessTokenField]) || (req.headers && req.headers[self._accessTokenField]);
+  var refreshToken = (req.body && req.body[self._refreshTokenField]) || (req.query && req.query[self._refreshTokenField]) || (req.headers && req.headers[self._refreshTokenField]);
 
   if (!accessToken) {
     return this.fail({
@@ -74,7 +74,7 @@ FacebookTokenStrategy.prototype.authenticate = function(req, options) {
     });
   }
 
-  self._loadUserProfile(accessToken, function(error, profile) {
+  self._loadUserProfile(accessToken, function (error, profile) {
     if (error) return self.error(error);
 
     function verified(error, user, info) {
@@ -103,7 +103,7 @@ FacebookTokenStrategy.prototype.authenticate = function(req, options) {
  * @return {Object}
  * @api protected
  */
-FacebookTokenStrategy.prototype.authorizationParams = function(options) {
+FacebookTokenStrategy.prototype.authorizationParams = function (options) {
   return options.display ? {
     display: options.display
   } : {};
@@ -129,7 +129,7 @@ FacebookTokenStrategy.prototype.authorizationParams = function(options) {
  * @param {Function} done
  * @api protected
  */
-FacebookTokenStrategy.prototype.userProfile = function(accessToken, done) {
+FacebookTokenStrategy.prototype.userProfile = function (accessToken, done) {
   var url = uri.parse(this._profileURL);
 
   if (this._enableProof) {
@@ -147,7 +147,7 @@ FacebookTokenStrategy.prototype.userProfile = function(accessToken, done) {
 
   url = uri.format(url);
 
-  this._oauth2.get(url, accessToken, function(error, body, res) {
+  this._oauth2.get(url, accessToken, function (error, body, res) {
     if (error) return done(new InternalOAuthError('Failed to fetch user profile', error));
 
     try {
@@ -179,7 +179,8 @@ FacebookTokenStrategy.prototype.userProfile = function(accessToken, done) {
   });
 };
 
-FacebookTokenStrategy.prototype._convertProfileFields = function(profileFields) {
+FacebookTokenStrategy.prototype._convertProfileFields = function (profileFields) {
+  var fields = [];
   var map = {
     'id': 'id',
     'username': 'username',
@@ -189,10 +190,9 @@ FacebookTokenStrategy.prototype._convertProfileFields = function(profileFields) 
     'profileUrl': 'link',
     'emails': 'email',
     'photos': 'picture'
-  },
-  fields = [];
+  };
 
-  profileFields.forEach(function(field) {
+  profileFields.forEach(function (field) {
     if (typeof map[field] === 'undefined') {
       return fields.push(field);
     }
