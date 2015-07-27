@@ -166,7 +166,7 @@ FacebookTokenStrategy.prototype.userProfile = function (accessToken, done) {
             value: json.email || ''
           }],
           photos: [{
-            value: ['https://graph.facebook.com/', json.id, '/picture?type=large'].join('') || ''
+            value: ['https://graph.facebook.com/', json.id, '/picture?type=large'].join('')
           }],
           _raw: body,
           _json: json
