@@ -179,7 +179,8 @@ FacebookTokenStrategy.prototype.userProfile = function (accessToken, done) {
   });
 };
 
-FacebookTokenStrategy.prototype._convertProfileFields = function (profileFields) {
+FacebookTokenStrategy.prototype._convertProfileFields = function (_profileFields) {
+  var profileFields = _profileFields || [];
   var fields = [];
   var map = {
     'id': 'id',
