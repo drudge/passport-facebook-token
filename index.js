@@ -99,12 +99,12 @@ FacebookTokenStrategy.prototype.authenticate = function (req, options) {
  * Options:
  *  - `display`  Display mode to render dialog, { `page`, `popup`, `touch` }.
  *
- * @param {Object} options
+ * @param {Object} [options]
  * @return {Object}
  * @api protected
  */
 FacebookTokenStrategy.prototype.authorizationParams = function (options) {
-  return options.display ? {
+  return (options && options.display) ? {
     display: options.display
   } : {};
 };
