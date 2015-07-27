@@ -131,9 +131,9 @@ describe('FacebookTokenStrategy:userProfile', function () {
       assert.equal(profile.provider, 'facebook');
       assert.equal(profile.id, '794955667239296');
       assert.equal(profile._json.id, '794955667239296');
-      assert.equal(profile.displayName, 'Евгений Обрезков');
-      assert.equal(profile.name.familyName, 'Обрезков');
-      assert.equal(profile.name.givenName, 'Евгений');
+      assert.equal(profile.displayName, 'Eugene Obrezkov');
+      assert.equal(profile.name.familyName, 'Obrezkov');
+      assert.equal(profile.name.givenName, 'Eugene');
       assert.equal(profile.gender, 'male');
       assert.equal(profile.emails[0].value, 'ghaiklor@gmail.com');
       assert.equal(profile.photos[0].value, 'https://graph.facebook.com/794955667239296/picture?type=large');
