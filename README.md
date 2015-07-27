@@ -1,8 +1,12 @@
 # passport-facebook-token
 
 [![Build Status](https://travis-ci.org/drudge/passport-facebook-token.svg)](https://travis-ci.org/drudge/passport-facebook-token)
-[![Dependency Status](https://david-dm.org/drudge/passport-facebook-token.svg)](https://david-dm.org/drudge/passport-facebook-token)
 [![Coverage Status](https://coveralls.io/repos/drudge/passport-facebook-token/badge.svg)](https://coveralls.io/r/drudge/passport-facebook-token)
+![Downloads](https://img.shields.io/npm/dm/sails-service-social.svg)
+![npm version](https://img.shields.io/npm/v/sails-service-social.svg)
+![dependencies](https://img.shields.io/david/ghaiklor/sails-service-social.svg)
+![dev dependencies](https://img.shields.io/david/dev/ghaiklor/sails-service-social.svg)
+![License](https://img.shields.io/npm/l/sails-service-social.svg)
 
 [Passport](http://passportjs.org/) strategy for authenticating with [Facebook](http://www.facebook.com/)
 access tokens using the OAuth 2.0 API.
