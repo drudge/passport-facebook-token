@@ -1,7 +1,7 @@
 # passport-facebook-token
 
 [![Build Status](https://travis-ci.org/drudge/passport-facebook-token.svg)](https://travis-ci.org/drudge/passport-facebook-token)
-[![Coverage Status](https://coveralls.io/repos/drudge/passport-facebook-token/badge.svg)](https://coveralls.io/r/drudge/passport-facebook-token)
+[![Coverage Status](https://coveralls.io/repos/drudge/passport-facebook-token/badge.svg?branch=master&service=github)](https://coveralls.io/github/drudge/passport-facebook-token?branch=master)
 ![Downloads](https://img.shields.io/npm/dm/passport-facebook-token.svg)
 ![npm version](https://img.shields.io/npm/v/passport-facebook-token.svg)
 ![dependencies](https://img.shields.io/david/drudge/passport-facebook-token.svg)
