@@ -9,5 +9,27 @@
   "name": "Eugene Obrezkov",
   "timezone": 2,
   "updated_time": "2015-02-20T09:00:51+0000",
-  "verified": true
+  "verified": true,
+  "friends": {
+    "data": [
+    {
+      "id": "1426849880945441",
+      "name": "Open Graph Test User"
+    },
+    {
+      "id": "1414619828851828",
+      "name": "Harry Amiaadgdiiaj Fallerberg"
+    },
+    {
+      "id": "1412249149089511",
+      "name": "John Amiaccaihefd Wisemansky"
+    } 
+    ],
+    "paging": {
+    "next": "https://graph.facebook.com/794955667239296/friends?limit=25&offset=25"
+    }, 
+    "summary": {
+    "total_count": 10
+    }
+  }
 }

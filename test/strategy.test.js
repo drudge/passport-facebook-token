@@ -378,6 +378,51 @@ describe('FacebookTokenStrategy:userProfile', function () {
       done();
     });
   });
+
+  it('Should not return _raw', function(done) {
+    var strategy = new FacebookTokenStrategy({
+      clientID: '123',
+      clientSecret: '123',
+      returnRawData: false
+    }, function() {});
+
+    strategy._oauth2.get = function(url, accessToken, next) {
+      next(null, fakeProfile, null);
+    };
+
+    strategy.userProfile('accessToken', function(error, profile) {
+      if (error) return done(error);
+
+      assert.equal(typeof profile._raw, 'undefined');
+
+      done();
+    });
+  });
+
+  it('Should unpaginate friends-field', function(done) {
+    var strategy = new FacebookTokenStrategy({
+      clientID: '123',
+      clientSecret: '123',
+      unpaginateFields: ['friends']
+    }, function() {});
+
+    strategy._oauth2.get = function(url, accessToken, next) {
+      if(url.indexOf("offset") > 0 && url.indexOf("limit") > 0) {
+        next(null,JSON.stringify(require('./fixtures/friends-page2.json')),null)
+      } else {
+        next(null, fakeProfile, null);
+      }
+    };
+
+    strategy.userProfile('accessToken', function(error, profile) {
+      if (error) return done(error);
+      
+      assert.equal(typeof profile._json.friends.paging, 'undefined');
+      assert.equal(profile._json.friends.data.length, 5);
+
+      done();
+    });
+  });
 });
 
 describe('FacebookTokenStrategy:convertProfileFields', function () {

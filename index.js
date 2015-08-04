@@ -54,6 +54,8 @@ function FacebookTokenStrategy(options, verify) {
   this._clientSecret = options.clientSecret;
   this._enableProof = options.enableProof;
   this._profileFields = options.profileFields || null;
+  this._unpaginateFields = (options.unpaginateFields === undefined) ? [] : options.unpaginateFields;
+  this._returnRawData = (options.returnRawData === undefined) ? true : !!options.returnRawData;
   this._oauth2._useAuthorizationHeaderForGET = false;
 }
 
@@ -168,15 +170,61 @@ FacebookTokenStrategy.prototype.userProfile = function (accessToken, done) {
           photos: [{
             value: ['https://graph.facebook.com/', json.id, '/picture?type=large'].join('')
           }],
-          _raw: body,
           _json: json
         };
+      
+      if (this._returnRawData) {
+        profile._raw = body
+      }
+      
+      if (this._unpaginateFields.length > 0) {
+        var unpaginateFields = this._unpaginateFields;
+        
+        var unpaginateField = function(pointer) {
+          if (pointer >= unpaginateFields.length) {
+            done(null, profile)
+          } else {
+            this._unpaginate(json[unpaginateFields[pointer]], function(err, obj) {
+              if (err) {
+                done(err)
+              } else {
+                profile._json[unpaginateFields[pointer]] = obj
+                unpaginateField(pointer + 1)
+              }
+            });
+          }
+        }.bind(this);
+        unpaginateField(0)
 
-      done(null, profile);
+     } else {
+       done(null, profile);
+     }
+
     } catch (e) {
       done(e);
     }
-  });
+  }.bind(this));
+};
+
+FacebookTokenStrategy.prototype._unpaginate = function(obj, callback) {
+  if (obj.paging && obj.paging.next) {
+    this._oauth2.get(obj.paging.next, null, function(error, body, res) {
+      if (!error) {
+        try {
+          var nextObj = JSON.parse(body)
+          nextObj.data = obj.data.concat(nextObj.data)
+          this._unpaginate(nextObj, callback)
+        } catch (exception) {
+          callback(exception);
+        }
+      } else {
+        callback(error)
+      }
+    }.bind(this));
+  } else {
+    delete obj.paging
+    callback(null, obj)
+  }
 };
 
 FacebookTokenStrategy.prototype._convertProfileFields = function (_profileFields) {
