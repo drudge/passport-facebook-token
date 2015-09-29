@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/drudge/passport-facebook-token.svg)](https://travis-ci.org/drudge/passport-facebook-token)
 [![Coverage Status](https://coveralls.io/repos/drudge/passport-facebook-token/badge.svg?branch=master&service=github)](https://coveralls.io/github/drudge/passport-facebook-token?branch=master)
 ![Downloads](https://img.shields.io/npm/dm/passport-facebook-token.svg)
+![Downloads](https://img.shields.io/npm/dt/passport-facebook-token.svg)
 ![npm version](https://img.shields.io/npm/v/passport-facebook-token.svg)
 ![dependencies](https://img.shields.io/david/drudge/passport-facebook-token.svg)
 ![dev dependencies](https://img.shields.io/david/dev/drudge/passport-facebook-token.svg)
@@ -57,7 +58,11 @@ app.post('/auth/facebook/token',
 );
 ```
 
-The post request to this route should include a JSON object with the keys `access_token` and optionally, `refresh_token` set to the credentials you receive from facebook.
+The post request to this route should include POST or GET data with the keys `access_token` and optionally, `refresh_token` set to the credentials you receive from facebook.
+
+```
+GET /auth/facebook/token?access_token=<TOKEN_HERE>
+```
 
 ## Credits
 
