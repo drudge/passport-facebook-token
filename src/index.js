@@ -72,12 +72,12 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
     this._loadUserProfile(accessToken, (error, profile) => {
       if (error) return this.error(error);
 
-      function verified(error, user, info) {
+      const verified = (error, user, info) => {
         if (error) return this.error(error);
         if (!user) return this.fail(info);
 
         return this.success(user, info);
-      }
+      };
 
       if (this._passReqToCallback) {
         this._verify(req, accessToken, refreshToken, profile, verified);
