@@ -25,6 +25,9 @@ build/Release
 # Dependency directory
 node_modules
 
+# Babel compiled sources
+lib
+
 # Miscellaneous
 *~
 *#

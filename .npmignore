@@ -1,5 +1,5 @@
 coverage
+src
 test
-.editorconfig
-.gitignore
-.travis.yml
+babelhook.js
+.idea
