@@ -1,8 +1,8 @@
-import { assert } from 'chai';
+import chai, { assert } from 'chai';
 import sinon from 'sinon';
 import FacebookTokenStrategy from '../../src/index';
-import fakeProfile from '../fixtures/profile.json';
 
+const fakeProfile = JSON.stringify(require('../fixtures/profile.json'));
 const STRATEGY_CONFIG = {
   clientID: '123',
   clientSecret: '123'
@@ -13,9 +13,7 @@ const BLANK_FUNCTION = () => {
 
 describe('FacebookTokenStrategy:init', () => {
   it('Should properly export Strategy constructor', () => {
-    assert.equal(typeof FacebookTokenStrategy, 'function');
-    assert.equal(typeof FacebookTokenStrategy.Strategy, 'function');
-    assert.equal(FacebookTokenStrategy, FacebookTokenStrategy.Strategy);
+    assert.isFunction(FacebookTokenStrategy);
   });
 
   it('Should properly initialize', () => {
