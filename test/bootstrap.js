@@ -1,4 +1,4 @@
-var chai = require('chai');
-var passport = require('chai-passport-strategy');
+import chai from 'chai';
+import passport from 'chai-passport-strategy';
 
 chai.use(passport);
