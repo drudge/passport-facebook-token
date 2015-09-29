@@ -1,8 +1,8 @@
 var chai = require('chai');
 var sinon = require('sinon');
 var assert = chai.assert;
-var FacebookTokenStrategy = require('../');
-var fakeProfile = JSON.stringify(require('./fixtures/profile.json'));
+var FacebookTokenStrategy = require('../../index');
+var fakeProfile = JSON.stringify(require('./../fixtures/profile.json'));
 
 var STRATEGY_CONFIG = {
   clientID: '123',
