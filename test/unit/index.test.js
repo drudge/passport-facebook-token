@@ -1,8 +1,8 @@
 import chai, { assert } from 'chai';
 import sinon from 'sinon';
 import FacebookTokenStrategy from '../../src/index';
+import fakeProfile from '../fixtures/profile';
 
-const fakeProfile = JSON.stringify(require('../fixtures/profile.json'));
 const STRATEGY_CONFIG = {
   clientID: '123',
   clientSecret: '123'

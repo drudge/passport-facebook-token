@@ -1,4 +1,4 @@
-{
+export default JSON.stringify({
   "id": "794955667239296",
   "email": "ghaiklor@gmail.com",
   "first_name": "Eugene",
@@ -10,4 +10,4 @@
   "timezone": 2,
   "updated_time": "2015-02-20T09:00:51+0000",
   "verified": true
-}
+});
