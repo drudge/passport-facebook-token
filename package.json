@@ -4,8 +4,9 @@
   "description": "Facebook token authentication strategy for Passport",
   "main": "lib/index.js",
   "scripts": {
-    "test": "istanbul cover _mocha ./test/**/*.test.js",
-    "coveralls": "cat ./coverage/lcov.info | coveralls"
+    "compile": "babel src --out-dir lib",
+    "prepublish": "npm run compile",
+    "test": "istanbul cover _mocha"
   },
   "repository": {
     "type": "git",
