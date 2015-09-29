@@ -5,5 +5,6 @@ node_js:
   - '0.11'
   - '0.12'
   - 'iojs'
+  - '4'
 after_script:
   - npm install coveralls && npm run coveralls
