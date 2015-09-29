@@ -1,74 +1,63 @@
-var chai = require('chai');
-var sinon = require('sinon');
-var assert = chai.assert;
-var FacebookTokenStrategy = require('../../index');
-var fakeProfile = JSON.stringify(require('./../fixtures/profile.json'));
+import { assert } from 'chai';
+import sinon from 'sinon';
+import FacebookTokenStrategy from '../../src/index';
+import fakeProfile from '../fixtures/profile.json';
 
-var STRATEGY_CONFIG = {
+const STRATEGY_CONFIG = {
   clientID: '123',
   clientSecret: '123'
 };
 
-var BLANK_FUNCTION = function () {
+const BLANK_FUNCTION = () => {
 };
 
-describe('FacebookTokenStrategy:init', function () {
-  it('Should properly export Strategy constructor', function () {
+describe('FacebookTokenStrategy:init', () => {
+  it('Should properly export Strategy constructor', () => {
     assert.equal(typeof FacebookTokenStrategy, 'function');
     assert.equal(typeof FacebookTokenStrategy.Strategy, 'function');
     assert.equal(FacebookTokenStrategy, FacebookTokenStrategy.Strategy);
   });
 
-  it('Should properly initialize', function () {
-    var strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, BLANK_FUNCTION);
+  it('Should properly initialize', () => {
+    let strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, BLANK_FUNCTION);
     assert.equal(strategy.name, 'facebook-token');
     assert.equal(strategy._oauth2._useAuthorizationHeaderForGET, false);
   });
 
-  it('Should properly throw exception when options is empty', function () {
-    assert.throw(function () {
-      new FacebookTokenStrategy();
-    }, Error);
+  it('Should properly throw exception when options is empty', () => {
+    assert.throw(() => new FacebookTokenStrategy(), Error);
   });
 });
 
-describe('FacebookTokenStrategy:authenticate', function () {
-  describe('Authenticate without passReqToCallback', function () {
-    var strategy;
+describe('FacebookTokenStrategy:authenticate', () => {
+  describe('Authenticate without passReqToCallback', () => {
+    let strategy;
 
-    before(function () {
-      strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, function (accessToken, refreshToken, profile, next) {
+    before(() => {
+      strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, (accessToken, refreshToken, profile, next) => {
         assert.equal(accessToken, 'access_token');
         assert.equal(refreshToken, 'refresh_token');
         assert.typeOf(profile, 'object');
         assert.typeOf(next, 'function');
-        return next(null, profile, {
-          info: 'foo'
-        });
+        return next(null, profile, {info: 'foo'});
       });
 
-      sinon.stub(strategy._oauth2, 'get', function (url, accessToken, next) {
-        next(null, fakeProfile, null);
-      });
+      sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
     });
 
-    after(function () {
-      strategy._oauth2.get.restore();
-    });
+    after(() => strategy._oauth2.get.restore());
 
-    it('Should properly parse access_token from body', function (done) {
+    it('Should properly parse access_token from body', done => {
       chai
         .passport
         .use(strategy)
-        .success(function (user, info) {
+        .success((user, info) => {
           assert.typeOf(user, 'object');
           assert.typeOf(info, 'object');
-          assert.deepEqual(info, {
-            info: 'foo'
-          });
+          assert.deepEqual(info, {info: 'foo'});
           done();
         })
-        .req(function (req) {
+        .req(req => {
           req.body = {
             access_token: 'access_token',
             refresh_token: 'refresh_token'
@@ -77,19 +66,17 @@ describe('FacebookTokenStrategy:authenticate', function () {
         .authenticate({});
     });
 
-    it('Should properly parse access_token from query', function (done) {
+    it('Should properly parse access_token from query', done => {
       chai
         .passport
         .use(strategy)
-        .success(function (user, info) {
+        .success((user, info) => {
           assert.typeOf(user, 'object');
           assert.typeOf(info, 'object');
-          assert.deepEqual(info, {
-            info: 'foo'
-          });
+          assert.deepEqual(info, {info: 'foo'});
           done();
         })
-        .req(function (req) {
+        .req(req => {
           req.query = {
             access_token: 'access_token',
             refresh_token: 'refresh_token'
@@ -98,19 +85,17 @@ describe('FacebookTokenStrategy:authenticate', function () {
         .authenticate({});
     });
 
-    it('Should properly parse access_token from headers', function (done) {
+    it('Should properly parse access_token from headers', done => {
       chai
         .passport
         .use(strategy)
-        .success(function (user, info) {
+        .success((user, info) => {
           assert.typeOf(user, 'object');
           assert.typeOf(info, 'object');
-          assert.deepEqual(info, {
-            info: 'foo'
-          });
+          assert.deepEqual(info, {info: 'foo'});
           done();
         })
-        .req(function (req) {
+        .req(req => {
           req.headers = {
             access_token: 'access_token',
             refresh_token: 'refresh_token'
@@ -119,8 +104,8 @@ describe('FacebookTokenStrategy:authenticate', function () {
         .authenticate({});
     });
 
-    it('Should properly call fail if access_token is not provided', function (done) {
-      chai.passport.use(strategy).fail(function (error) {
+    it('Should properly call fail if access_token is not provided', done => {
+      chai.passport.use(strategy).fail(error => {
         assert.typeOf(error, 'object');
         assert.typeOf(error.message, 'string');
         assert.equal(error.message, 'You should provide access_token');
@@ -129,47 +114,39 @@ describe('FacebookTokenStrategy:authenticate', function () {
     });
   });
 
-  describe('Authenticate with passReqToCallback', function () {
-    var strategy;
+  describe('Authenticate with passReqToCallback', () => {
+    let strategy;
 
-    before(function () {
+    before(() => {
       strategy = new FacebookTokenStrategy({
         clientID: '123',
         clientSecret: '123',
         passReqToCallback: true
-      }, function (req, accessToken, refreshToken, profile, next) {
+      }, (req, accessToken, refreshToken, profile, next) => {
         assert.typeOf(req, 'object');
         assert.equal(accessToken, 'access_token');
         assert.equal(refreshToken, 'refresh_token');
         assert.typeOf(profile, 'object');
         assert.typeOf(next, 'function');
-        return next(null, profile, {
-          info: 'foo'
-        });
+        return next(null, profile, {info: 'foo'});
       });
 
-      sinon.stub(strategy._oauth2, 'get', function (url, accessToken, next) {
-        next(null, fakeProfile, null);
-      });
+      sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
     });
 
-    after(function () {
-      strategy._oauth2.get.restore();
-    });
+    after(() => strategy._oauth2.get.restore());
 
-    it('Should properly call _verify with req', function (done) {
+    it('Should properly call _verify with req', done => {
       chai
         .passport
         .use(strategy)
-        .success(function (user, info) {
+        .success((user, info) => {
           assert.typeOf(user, 'object');
           assert.typeOf(info, 'object');
-          assert.deepEqual(info, {
-            info: 'foo'
-          });
+          assert.deepEqual(info, {info: 'foo'});
           done();
         })
-        .req(function (req) {
+        .req(req => {
           req.body = {
             access_token: 'access_token',
             refresh_token: 'refresh_token'
@@ -179,31 +156,27 @@ describe('FacebookTokenStrategy:authenticate', function () {
     });
   });
 
-  describe('Failed authentications', function () {
-    it('Should properly return error on loadUserProfile', function (done) {
-      var strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, function (accessToken, refreshToken, profile, next) {
+  describe('Failed authentications', () => {
+    it('Should properly return error on loadUserProfile', done => {
+      let strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, (accessToken, refreshToken, profile, next) => {
         assert.equal(accessToken, 'access_token');
         assert.equal(refreshToken, 'refresh_token');
         assert.typeOf(profile, 'object');
         assert.typeOf(next, 'function');
-        return next(null, profile, {
-          info: 'foo'
-        });
+        return next(null, profile, {info: 'foo'});
       });
 
-      sinon.stub(strategy, '_loadUserProfile', function (accessToken, next) {
-        next(new Error('Some error occurred'));
-      });
+      sinon.stub(strategy, '_loadUserProfile', (accessToken, next) => next(new Error('Some error occurred')));
 
       chai
         .passport
         .use(strategy)
-        .error(function (error) {
+        .error(error => {
           assert.instanceOf(error, Error);
           strategy._loadUserProfile.restore();
           done();
         })
-        .req(function (req) {
+        .req(req => {
           req.body = {
             access_token: 'access_token',
             refresh_token: 'refresh_token'
@@ -212,8 +185,8 @@ describe('FacebookTokenStrategy:authenticate', function () {
         .authenticate({});
     });
 
-    it('Should properly return error on verified', function (done) {
-      var strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, function (accessToken, refreshToken, profile, next) {
+    it('Should properly return error on verified', done => {
+      let strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, (accessToken, refreshToken, profile, next) => {
         assert.equal(accessToken, 'access_token');
         assert.equal(refreshToken, 'refresh_token');
         assert.typeOf(profile, 'object');
@@ -221,19 +194,17 @@ describe('FacebookTokenStrategy:authenticate', function () {
         return next(new Error('Some error occurred'));
       });
 
-      sinon.stub(strategy._oauth2, 'get', function (url, accessToken, next) {
-        next(null, fakeProfile, null);
-      });
+      sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
 
       chai
         .passport
         .use(strategy)
-        .error(function (error) {
+        .error(error => {
           assert.instanceOf(error, Error);
           strategy._oauth2.get.restore();
           done();
         })
-        .req(function (req) {
+        .req(req => {
           req.body = {
             access_token: 'access_token',
             refresh_token: 'refresh_token'
@@ -242,8 +213,8 @@ describe('FacebookTokenStrategy:authenticate', function () {
         .authenticate({});
     });
 
-    it('Should properly return error on verified', function (done) {
-      var strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, function (accessToken, refreshToken, profile, next) {
+    it('Should properly return error on verified', done => {
+      let strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, (accessToken, refreshToken, profile, next) => {
         assert.equal(accessToken, 'access_token');
         assert.equal(refreshToken, 'refresh_token');
         assert.typeOf(profile, 'object');
@@ -251,19 +222,17 @@ describe('FacebookTokenStrategy:authenticate', function () {
         return next(null, null, 'INFO');
       });
 
-      sinon.stub(strategy._oauth2, 'get', function (url, accessToken, next) {
-        next(null, fakeProfile, null);
-      });
+      sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
 
       chai
         .passport
         .use(strategy)
-        .fail(function (error) {
+        .fail(error => {
           assert.equal(error, 'INFO');
           strategy._oauth2.get.restore();
           done();
         })
-        .req(function (req) {
+        .req(req => {
           req.body = {
             access_token: 'access_token',
             refresh_token: 'refresh_token'
@@ -274,26 +243,24 @@ describe('FacebookTokenStrategy:authenticate', function () {
   });
 });
 
-describe('FacebookTokenStrategy:authorizationParams', function () {
-  var strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, BLANK_FUNCTION);
+describe('FacebookTokenStrategy:authorizationParams', () => {
+  let strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, BLANK_FUNCTION);
 
-  it('Should properly return empty object', function () {
+  it('Should properly return empty object', () => {
     assert.deepEqual(strategy.authorizationParams(), {});
   });
 
-  it('Should properly return object with display', function () {
+  it('Should properly return object with display', () => {
     assert.deepEqual(strategy.authorizationParams({display: 'DISPLAY'}), {display: 'DISPLAY'});
   });
 });
 
-describe('FacebookTokenStrategy:userProfile', function () {
-  it('Should properly fetch profile', function (done) {
-    var strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, BLANK_FUNCTION);
-    sinon.stub(strategy._oauth2, 'get', function (url, accessToken, next) {
-      next(null, fakeProfile, null);
-    });
+describe('FacebookTokenStrategy:userProfile', () => {
+  it('Should properly fetch profile', done => {
+    let strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, BLANK_FUNCTION);
+    sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
 
-    strategy.userProfile('accessToken', function (error, profile) {
+    strategy.userProfile('accessToken', (error, profile) => {
       if (error) return done(error);
 
       assert.equal(profile.provider, 'facebook');
@@ -314,14 +281,12 @@ describe('FacebookTokenStrategy:userProfile', function () {
     });
   });
 
-  it('Should properly handle exception on fetching profile', function (done) {
-    var strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, BLANK_FUNCTION);
+  it('Should properly handle exception on fetching profile', done => {
+    let strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, BLANK_FUNCTION);
 
-    sinon.stub(strategy._oauth2, 'get', function (url, accessToken, next) {
-      next(null, 'not a JSON');
-    });
+    sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, 'not a JSON'));
 
-    strategy.userProfile('accessToken', function (error, profile) {
+    strategy.userProfile('accessToken', (error, profile) => {
       assert(error instanceof SyntaxError);
       assert.equal(typeof profile, 'undefined');
       strategy._oauth2.get.restore();
@@ -329,50 +294,44 @@ describe('FacebookTokenStrategy:userProfile', function () {
     });
   });
 
-  it('Should properly make request with enableProof', function (done) {
-    var strategy = new FacebookTokenStrategy({
+  it('Should properly make request with enableProof', done => {
+    let strategy = new FacebookTokenStrategy({
       clientID: '123',
       clientSecret: '123',
       enableProof: true
     }, BLANK_FUNCTION);
 
-    sinon.stub(strategy._oauth2, 'get', function (url, accessToken, next) {
-      next(null, fakeProfile, null);
-    });
+    sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
 
-    strategy.userProfile('accessToken', function (error, profile) {
+    strategy.userProfile('accessToken', (error, profile) => {
       assert.equal(strategy._oauth2.get.getCall(0).args[0], 'https://graph.facebook.com/v2.2/me?appsecret_proof=8c340bd01643ab69939ca971314d7a3d64bfb18946cdde566f12fdbf6707d182');
       strategy._oauth2.get.restore();
       done();
     });
   });
 
-  it('Should properly make request with profileFields', function (done) {
-    var strategy = new FacebookTokenStrategy({
+  it('Should properly make request with profileFields', done => {
+    let strategy = new FacebookTokenStrategy({
       clientID: '123',
       clientSecret: '123',
       profileFields: ['username', 'name', 'custom']
     }, BLANK_FUNCTION);
 
-    sinon.stub(strategy._oauth2, 'get', function (url, accessToken, next) {
-      next(null, fakeProfile, null);
-    });
+    sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
 
-    strategy.userProfile('accessToken', function (error, profile) {
+    strategy.userProfile('accessToken', (error, profile) => {
       assert.equal(strategy._oauth2.get.getCall(0).args[0], 'https://graph.facebook.com/v2.2/me?fields=username,last_name,first_name,middle_name,custom');
       strategy._oauth2.get.restore();
       done();
     });
   });
 
-  it('Should properly throw error on _oauth2.get error', function (done) {
-    var strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, BLANK_FUNCTION);
+  it('Should properly throw error on _oauth2.get error', done => {
+    let strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, BLANK_FUNCTION);
 
-    sinon.stub(strategy._oauth2, 'get', function (url, accessToken, next) {
-      next('Some error occurred');
-    });
+    sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next('Some error occurred'));
 
-    strategy.userProfile('accessToken', function (error, profile) {
+    strategy.userProfile('accessToken', (error, profile) => {
       assert.instanceOf(error, Error);
       strategy._oauth2.get.restore();
       done();
@@ -380,20 +339,20 @@ describe('FacebookTokenStrategy:userProfile', function () {
   });
 });
 
-describe('FacebookTokenStrategy:convertProfileFields', function () {
-  var strategy = new FacebookTokenStrategy({
+describe('FacebookTokenStrategy:convertProfileFields', () => {
+  let strategy = new FacebookTokenStrategy({
     clientID: '123',
     clientSecret: '123'
-  }, function () {
+  }, () => {
   });
 
-  it('Should properly return string with pre-defined fields', function () {
-    var string = strategy._convertProfileFields();
+  it('Should properly return string with pre-defined fields', () => {
+    let string = strategy._convertProfileFields();
     assert.equal(string, '');
   });
 
-  it('Should properly return string with custom fields', function () {
-    var string = strategy._convertProfileFields(['username', 'name', 'emails', 'custom']);
+  it('Should properly return string with custom fields', () => {
+    let string = strategy._convertProfileFields(['username', 'name', 'emails', 'custom']);
     assert.equal(string, 'username,last_name,first_name,middle_name,email,custom');
   });
 });
