@@ -156,6 +156,12 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
     });
   }
 
+  /**
+   * Converts array of fields to string
+   * @param {Array} _profileFields Profile fields i.e. ['id', 'email']
+   * @returns {String}
+   * @private
+   */
   _convertProfileFields(_profileFields) {
     let profileFields = _profileFields || [];
     let fields = [];
