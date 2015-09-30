@@ -36,12 +36,12 @@ import OAuth2Strategy, { InternalOAuthError } from 'passport-oauth2';
  */
 export default class FacebookTokenStrategy extends OAuth2Strategy {
   constructor(_options, _verify) {
+    let options = _options || {};
     let verify = _verify;
-    let options = Object.assign({
-      authorizationURL: 'https://www.facebook.com/v2.2/dialog/oauth',
-      tokenURL: 'https://graph.facebook.com/oauth/access_token',
-      scopeSeparator: ','
-    }, _options);
+
+    options.authorizationURL = options.authorizationURL || 'https://www.facebook.com/v2.2/dialog/oauth';
+    options.tokenURL = options.tokenURL || 'https://graph.facebook.com/oauth/access_token';
+    options.scopeSeparator = options.scopeSeparator || ',';
 
     super(options, verify);
 
