@@ -87,21 +87,6 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
   }
 
   /**
-   * Return extra Facebook-specific parameters to be included in the authorization
-   * request.
-   *
-   * Options:
-   *  - `display`  Display mode to render dialog, { `page`, `popup`, `touch` }.
-   *
-   * @param {Object} [options]
-   * @return {Object}
-   * @api protected
-   */
-  authorizationParams(options) {
-    return (options && options.display) ? {display: options.display} : {};
-  }
-
-  /**
    * Retrieve user profile from Facebook.
    *
    * This function constructs a normalized profile, with the following properties:
