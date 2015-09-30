@@ -287,7 +287,7 @@ describe('FacebookTokenStrategy:userProfile', () => {
     sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
 
     strategy.userProfile('accessToken', (error, profile) => {
-      assert.equal(strategy._oauth2.get.getCall(0).args[0], 'https://graph.facebook.com/v2.4/me?fields=last_name,first_name,middle_name,custom');
+      assert.equal(strategy._oauth2.get.getCall(0).args[0], 'https://graph.facebook.com/v2.4/me?appsecret_proof=8c340bd01643ab69939ca971314d7a3d64bfb18946cdde566f12fdbf6707d182&fields=last_name,first_name,middle_name,custom');
       strategy._oauth2.get.restore();
       done();
     });
