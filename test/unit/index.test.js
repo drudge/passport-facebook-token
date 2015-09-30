@@ -271,7 +271,7 @@ describe('FacebookTokenStrategy:userProfile', () => {
     sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
 
     strategy.userProfile('accessToken', (error, profile) => {
-      assert.equal(strategy._oauth2.get.getCall(0).args[0], 'https://graph.facebook.com/v2.4/me?appsecret_proof=8c340bd01643ab69939ca971314d7a3d64bfb18946cdde566f12fdbf6707d182&fields=id,username,last_name,first_name,middle_name,email');
+      assert.equal(strategy._oauth2.get.getCall(0).args[0], 'https://graph.facebook.com/v2.4/me?appsecret_proof=8c340bd01643ab69939ca971314d7a3d64bfb18946cdde566f12fdbf6707d182&fields=id,last_name,first_name,middle_name,email');
       strategy._oauth2.get.restore();
       done();
     });
@@ -281,13 +281,13 @@ describe('FacebookTokenStrategy:userProfile', () => {
     let strategy = new FacebookTokenStrategy({
       clientID: '123',
       clientSecret: '123',
-      profileFields: ['username', 'name', 'custom']
+      profileFields: ['name', 'custom']
     }, BLANK_FUNCTION);
 
     sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
 
     strategy.userProfile('accessToken', (error, profile) => {
-      assert.equal(strategy._oauth2.get.getCall(0).args[0], 'https://graph.facebook.com/v2.4/me?fields=username,last_name,first_name,middle_name,custom');
+      assert.equal(strategy._oauth2.get.getCall(0).args[0], 'https://graph.facebook.com/v2.4/me?fields=last_name,first_name,middle_name,custom');
       strategy._oauth2.get.restore();
       done();
     });

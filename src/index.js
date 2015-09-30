@@ -52,7 +52,7 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
     this._profileURL = options.profileURL || 'https://graph.facebook.com/v2.4/me';
     this._clientSecret = options.clientSecret;
     this._enableProof = options.enableProof;
-    this._profileFields = options.profileFields || ['id', 'username', 'name', 'emails'];
+    this._profileFields = options.profileFields || ['id', 'name', 'emails'];
     this._oauth2._useAuthorizationHeaderForGET = false;
   }
 
@@ -167,7 +167,6 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
     let fields = [];
     let map = {
       'id': 'id',
-      'username': 'username',
       'displayName': 'name',
       'name': ['last_name', 'first_name', 'middle_name'],
       'gender': 'gender',
