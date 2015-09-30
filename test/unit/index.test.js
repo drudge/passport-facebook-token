@@ -83,25 +83,6 @@ describe('FacebookTokenStrategy:authenticate', () => {
         .authenticate({});
     });
 
-    it('Should properly parse access_token from headers', done => {
-      chai
-        .passport
-        .use(strategy)
-        .success((user, info) => {
-          assert.typeOf(user, 'object');
-          assert.typeOf(info, 'object');
-          assert.deepEqual(info, {info: 'foo'});
-          done();
-        })
-        .req(req => {
-          req.headers = {
-            access_token: 'access_token',
-            refresh_token: 'refresh_token'
-          }
-        })
-        .authenticate({});
-    });
-
     it('Should properly call fail if access_token is not provided', done => {
       chai.passport.use(strategy).fail(error => {
         assert.typeOf(error, 'object');
@@ -241,18 +222,6 @@ describe('FacebookTokenStrategy:authenticate', () => {
   });
 });
 
-describe('FacebookTokenStrategy:authorizationParams', () => {
-  let strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, BLANK_FUNCTION);
-
-  it('Should properly return empty object', () => {
-    assert.deepEqual(strategy.authorizationParams(), {});
-  });
-
-  it('Should properly return object with display', () => {
-    assert.deepEqual(strategy.authorizationParams({display: 'DISPLAY'}), {display: 'DISPLAY'});
-  });
-});
-
 describe('FacebookTokenStrategy:userProfile', () => {
   it('Should properly fetch profile', done => {
     let strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, BLANK_FUNCTION);
@@ -302,7 +271,7 @@ describe('FacebookTokenStrategy:userProfile', () => {
     sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
 
     strategy.userProfile('accessToken', (error, profile) => {
-      assert.equal(strategy._oauth2.get.getCall(0).args[0], 'https://graph.facebook.com/v2.2/me?appsecret_proof=8c340bd01643ab69939ca971314d7a3d64bfb18946cdde566f12fdbf6707d182');
+      assert.equal(strategy._oauth2.get.getCall(0).args[0], 'https://graph.facebook.com/v2.4/me?appsecret_proof=8c340bd01643ab69939ca971314d7a3d64bfb18946cdde566f12fdbf6707d182&fields=id,username,last_name,first_name,middle_name,email');
       strategy._oauth2.get.restore();
       done();
     });
@@ -318,7 +287,7 @@ describe('FacebookTokenStrategy:userProfile', () => {
     sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
 
     strategy.userProfile('accessToken', (error, profile) => {
-      assert.equal(strategy._oauth2.get.getCall(0).args[0], 'https://graph.facebook.com/v2.2/me?fields=username,last_name,first_name,middle_name,custom');
+      assert.equal(strategy._oauth2.get.getCall(0).args[0], 'https://graph.facebook.com/v2.4/me?fields=username,last_name,first_name,middle_name,custom');
       strategy._oauth2.get.restore();
       done();
     });
