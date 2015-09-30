@@ -39,7 +39,7 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
     let options = _options || {};
     let verify = _verify;
 
-    options.authorizationURL = options.authorizationURL || 'https://www.facebook.com/v2.2/dialog/oauth';
+    options.authorizationURL = options.authorizationURL || 'https://www.facebook.com/v2.4/dialog/oauth';
     options.tokenURL = options.tokenURL || 'https://graph.facebook.com/oauth/access_token';
     options.scopeSeparator = options.scopeSeparator || ',';
 
@@ -49,7 +49,7 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
     this._accessTokenField = options.accessTokenField || 'access_token';
     this._refreshTokenField = options.refreshTokenField || 'refresh_token';
     this._passReqToCallback = options.passReqToCallback;
-    this._profileURL = options.profileURL || 'https://graph.facebook.com/v2.2/me';
+    this._profileURL = options.profileURL || 'https://graph.facebook.com/v2.4/me';
     this._clientSecret = options.clientSecret;
     this._enableProof = options.enableProof;
     this._profileFields = options.profileFields || null;
