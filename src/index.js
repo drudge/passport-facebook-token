@@ -104,9 +104,7 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
 
     if (this._profileFields) {
       let fields = this._convertProfileFields(this._profileFields);
-      if (fields !== '') {
-        url.search = `${url.search ? url.search + '&' : ''}fields=${fields}`;
-      }
+      url.search = `${url.search ? url.search + '&' : ''}fields=${fields}`;
     }
 
     url = uri.format(url);
