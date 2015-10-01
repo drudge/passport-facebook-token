@@ -36,12 +36,13 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
     this.name = 'facebook-token';
     this._accessTokenField = options.accessTokenField || 'access_token';
     this._refreshTokenField = options.refreshTokenField || 'refresh_token';
-    this._passReqToCallback = options.passReqToCallback;
     this._profileURL = options.profileURL || 'https://graph.facebook.com/v2.4/me';
+    this._profileFields = options.profileFields || ['id', 'name', 'emails'];
     this._clientSecret = options.clientSecret;
     this._enableProof = typeof options.enableProof === 'boolean' ? options.enableProof : true;
-    this._profileFields = options.profileFields || ['id', 'name', 'emails'];
-    this._oauth2._useAuthorizationHeaderForGET = false;
+    this._passReqToCallback = options.passReqToCallback;
+
+    this._oauth2.useAuthorizationHeaderforGET(false);
   }
 
   /**
