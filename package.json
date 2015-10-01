@@ -37,14 +37,14 @@
     "url": "http://github.com/drudge/passport-facebook-token/issues"
   },
   "dependencies": {
-    "passport-oauth2": "^1.0.0"
+    "passport-oauth": "1.0.0"
   },
   "devDependencies": {
-    "babel": "^5.8.23",
-    "chai": "^3.2.0",
-    "chai-passport-strategy": "^0.2.0",
-    "istanbul": "^0.3.8",
-    "mocha": "^2.2.1",
-    "sinon": "^1.15.4"
+    "babel": "5.8.23",
+    "chai": "3.2.0",
+    "chai-passport-strategy": "0.2.0",
+    "istanbul": "0.3.8",
+    "mocha": "2.2.1",
+    "sinon": "1.15.4"
   }
 }
