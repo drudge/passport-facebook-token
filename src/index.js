@@ -1,6 +1,6 @@
 import uri from 'url';
 import crypto from 'crypto';
-import OAuth2Strategy, { InternalOAuthError } from 'passport-oauth2';
+import { OAuth2Strategy, InternalOAuthError } from 'passport-oauth';
 
 /**
  * `FacebookTokenStrategy` constructor.
