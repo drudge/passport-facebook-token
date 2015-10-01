@@ -13,26 +13,15 @@ import { OAuth2Strategy, InternalOAuthError } from 'passport-oauth';
  * callback supplying a `user`, which should be set to `false` if the
  * credentials are not valid.  If an exception occurred, `error` should be set.
  *
- * Options:
- *   - `clientID`      your Facebook application's App ID
- *   - `clientSecret`  your Facebook application's App Secret
- *
- * Examples:
- *
- *     passport.use(new FacebookTokenStrategy({
- *         clientID: '123-456-789',
- *         clientSecret: 'shhh-its-a-secret'
- *       },
- *       function(accessToken, refreshToken, profile, done) {
- *         User.findOrCreate(..., function (err, user) {
- *           done(err, user);
- *         });
- *       }
- *     ));
- *
  * @param {Object} options
  * @param {Function} verify
- * @api public
+ * @example
+ * passport.use(new FacebookTokenStrategy({
+ *   clientID: '123456789',
+ *   clientSecret: 'shhh-its-a-secret'
+ * }), (accessToken, refreshToken, profile, done) => {
+ *   User.findOrCreate({facebookId: profile.id}, done);
+ * });
  */
 export default class FacebookTokenStrategy extends OAuth2Strategy {
   constructor(_options, _verify) {
