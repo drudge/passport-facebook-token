@@ -49,7 +49,6 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
    * Authenticate request by delegating to a service provider using OAuth 2.0.
    * @param {Object} req
    * @param {Object} options
-   * @api protected
    */
   authenticate(req, options) {
     let accessToken = (req.body && req.body[this._accessTokenField]) || (req.query && req.query[this._accessTokenField]);
@@ -93,7 +92,6 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
    *
    * @param {String} accessToken
    * @param {Function} done
-   * @api protected
    */
   userProfile(accessToken, done) {
     let url = uri.parse(this._profileURL);
@@ -146,10 +144,9 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
   }
 
   /**
-   * Converts array of fields to string
+   * Converts array of profile fields to string
    * @param {Array} _profileFields Profile fields i.e. ['id', 'email']
    * @returns {String}
-   * @private
    */
   _convertProfileFields(_profileFields) {
     let profileFields = _profileFields || [];
