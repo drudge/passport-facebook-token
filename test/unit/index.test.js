@@ -307,19 +307,13 @@ describe('FacebookTokenStrategy:userProfile', () => {
 });
 
 describe('FacebookTokenStrategy:convertProfileFields', () => {
-  let strategy = new FacebookTokenStrategy({
-    clientID: '123',
-    clientSecret: '123'
-  }, () => {
-  });
-
   it('Should properly return string with pre-defined fields', () => {
-    let string = strategy._convertProfileFields();
+    let string = FacebookTokenStrategy.convertProfileFields();
     assert.equal(string, '');
   });
 
   it('Should properly return string with custom fields', () => {
-    let string = strategy._convertProfileFields(['username', 'name', 'emails', 'custom']);
+    let string = FacebookTokenStrategy.convertProfileFields(['username', 'name', 'emails', 'custom']);
     assert.equal(string, 'username,last_name,first_name,middle_name,email,custom');
   });
 });

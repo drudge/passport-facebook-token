@@ -103,7 +103,7 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
     }
 
     if (this._profileFields) {
-      let fields = this._convertProfileFields(this._profileFields);
+      let fields = FacebookTokenStrategy.convertProfileFields(this._profileFields);
       url.search = `${url.search ? url.search + '&' : ''}fields=${fields}`;
     }
 
@@ -146,7 +146,7 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
    * @param {Array} _profileFields Profile fields i.e. ['id', 'email']
    * @returns {String}
    */
-  _convertProfileFields(_profileFields) {
+  static convertProfileFields(_profileFields) {
     let profileFields = _profileFields || [];
     let fields = [];
     let map = {
