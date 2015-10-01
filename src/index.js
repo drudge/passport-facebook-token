@@ -99,13 +99,13 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
     if (this._enableProof) {
       // For further details, refer to https://developers.facebook.com/docs/reference/api/securing-graph-api/
       let proof = crypto.createHmac('sha256', this._clientSecret).update(accessToken).digest('hex');
-      url.search = (url.search ? url.search + '&' : '') + 'appsecret_proof=' + encodeURIComponent(proof);
+      url.search = `${url.search ? url.search + '&' : ''}appsecret_proof=${encodeURIComponent(proof)}`;
     }
 
     if (this._profileFields) {
       let fields = this._convertProfileFields(this._profileFields);
       if (fields !== '') {
-        url.search = (url.search ? url.search + '&' : '') + 'fields=' + fields;
+        url.search = `${url.search ? url.search + '&' : ''}fields=${fields}`;
       }
     }
 
@@ -130,7 +130,7 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
             value: json.email || ''
           }],
           photos: [{
-            value: ['https://graph.facebook.com/', json.id, '/picture?type=large'].join('')
+            value: `https://graph.facebook.com/${json.id}/picture?type=large`
           }],
           _raw: body,
           _json: json
