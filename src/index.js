@@ -148,7 +148,6 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
    */
   static convertProfileFields(_profileFields) {
     let profileFields = _profileFields || [];
-    let fields = [];
     let map = {
       'id': 'id',
       'displayName': 'name',
@@ -159,16 +158,6 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
       'photos': 'picture'
     };
 
-    profileFields.forEach(field => {
-      if (typeof map[field] === 'undefined') return fields.push(field);
-
-      if (Array.isArray(map[field])) {
-        Array.prototype.push.apply(fields, map[field]);
-      } else {
-        fields.push(map[field]);
-      }
-    });
-
-    return fields.join(',');
+    return profileFields.reduce((acc, field) => acc.concat(map[field] || field), []).join(',');
   }
 }
