@@ -24,7 +24,7 @@ unobtrusively integrated into any application or framework that supports
 
 ## Usage
 
-#### Configure Strategy
+### Configure Strategy
 
 The Facebook authentication strategy authenticates users using a Facebook
 account and OAuth 2.0 tokens.  The strategy requires a `verify` callback, which
@@ -35,16 +35,15 @@ accepts these credentials and calls `done` providing a user, as well as
 passport.use(new FacebookTokenStrategy({
     clientID: FACEBOOK_APP_ID,
     clientSecret: FACEBOOK_APP_SECRET
-  },
-  function(accessToken, refreshToken, profile, done) {
-    User.findOrCreate({ facebookId: profile.id }, function (err, user) {
-      return done(err, user);
+  }, function(accessToken, refreshToken, profile, done) {
+    User.findOrCreate({facebookId: profile.id}, function (error, user) {
+      return done(error, user);
     });
   }
 ));
 ```
 
-#### Authenticate Requests
+### Authenticate Requests
 
 Use `passport.authenticate()`, specifying the `'facebook-token'` strategy, to authenticate requests.
 
@@ -56,6 +55,20 @@ app.post('/auth/facebook/token',
     res.send(req.user? 200 : 401);
   }
 );
+```
+
+Or using Sails framework:
+
+```javascript
+// api/controllers/AuthController.js
+module.exports = {
+  facebook: function(req, res) {
+    passport.authenticate('facebook-token', function(error, user, info) {
+      // do stuff with user
+      res.ok();
+    })(req, res);
+  }
+};
 ```
 
 The post request to this route should include POST or GET data with the keys `access_token` and optionally, `refresh_token` set to the credentials you receive from facebook.
