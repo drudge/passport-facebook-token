@@ -30,7 +30,6 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
 
     options.authorizationURL = options.authorizationURL || 'https://www.facebook.com/v2.4/dialog/oauth';
     options.tokenURL = options.tokenURL || 'https://graph.facebook.com/oauth/access_token';
-    options.scopeSeparator = options.scopeSeparator || ',';
 
     super(options, verify);
 
