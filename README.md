@@ -32,6 +32,8 @@ accepts these credentials and calls `done` providing a user, as well as
 `options` specifying a app ID and app secret.
 
 ```js
+var FacebookTokenStrategy = require('passport-facebook-token');
+
 passport.use(new FacebookTokenStrategy({
     clientID: FACEBOOK_APP_ID,
     clientSecret: FACEBOOK_APP_SECRET
