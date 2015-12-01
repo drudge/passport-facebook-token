@@ -44,8 +44,14 @@
     "babel-preset-es2015-node4": "2.0.2",
     "chai": "3.3.0",
     "chai-passport-strategy": "0.2.0",
+    "cz-conventional-changelog": "1.1.4",
     "isparta": "4.0.0",
     "mocha": "2.3.3",
     "sinon": "1.17.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
