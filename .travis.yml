@@ -1,9 +1,17 @@
-language: node_js
 sudo: false
+language: node_js
+cache:
+  directories:
+    - node_modules
+notifications:
+  email: true
 node_js:
-  - '0.10'
-  - '0.12'
-  - 'iojs'
-  - '4'
-after_script:
-  - npm install coveralls && cat ./coverage/lcov.info | coveralls
+  - stable
+  - 4
+before_script:
+  - npm prune
+after_success:
+  - npm run coveralls
+branches:
+  except:
+    - "/^v\\d+\\.\\d+\\.\\d+$/"
