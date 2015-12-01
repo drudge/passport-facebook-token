@@ -6,7 +6,7 @@
   "scripts": {
     "compile": "babel src --out-dir lib",
     "prepublish": "npm run compile",
-    "test": "istanbul cover _mocha"
+    "test": "babel-node ./node_modules/.bin/isparta cover _mocha"
   },
   "repository": {
     "type": "git",
@@ -40,10 +40,11 @@
     "passport-oauth": "1.0.0"
   },
   "devDependencies": {
-    "babel": "5.8.23",
+    "babel-cli": "6.2.0",
+    "babel-preset-es2015-node4": "2.0.2",
     "chai": "3.3.0",
     "chai-passport-strategy": "0.2.0",
-    "istanbul": "0.3.21",
+    "isparta": "4.0.0",
     "mocha": "2.3.3",
     "sinon": "1.17.1"
   }

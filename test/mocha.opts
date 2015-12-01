@@ -1,5 +1,4 @@
 ./test/unit/**/*.test.js
---require babelhook.js
 --require ./test/bootstrap.js
 --reporter nyan
 --recursive
