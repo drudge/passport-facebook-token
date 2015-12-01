@@ -51,8 +51,8 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
    * @param {Object} options
    */
   authenticate(req, options) {
-    let accessToken = (req.body && req.body[this._accessTokenField]) || (req.query && req.query[this._accessTokenField]);
-    let refreshToken = (req.body && req.body[this._refreshTokenField]) || (req.query && req.query[this._refreshTokenField]);
+    let accessToken = (req.body && req.body[this._accessTokenField]) || (req.query && req.query[this._accessTokenField]) || (req.headers && req.headers[this._accessTokenField]);
+    let refreshToken = (req.body && req.body[this._refreshTokenField]) || (req.query && req.query[this._refreshTokenField]) || (req.headers && req.headers[this._refreshTokenField]);
 
     if (!accessToken) return this.fail({message: `You should provide ${this._accessTokenField}`});
 
