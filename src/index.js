@@ -169,13 +169,15 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
   * @returns {String} access token
   */ 
   static parseAccessTokenHeader(headers, accessTokenField, authorizationField) {
-    let bearerRE = /Bearer\ (.*)/;
-    let match = bearerRE.exec(headers[authorizationField]); 
-    
-    if ( headers && headers[accessTokenField] ) {
+    // headers should be case insensitive, some libraries (like unirest) will lowercase all headers automatically
+    // lowercasing custom accessTokenField since users can override it        
+    if ( headers && (headers[accessTokenField] || headers[accessTokenField.toLowerCase()]) ) {
       return headers[accessTokenField];      
-    }
-    else if ( headers && headers[authorizationField] && match ) {
+    }    
+    else if ( headers && (headers[authorizationField] ||  headers[authorizationField.toLowerCase()]) ) {
+      let bearerRE = /Bearer\ (.*)/;
+      let header = headers[authorizationField] ||  headers[authorizationField.toLowerCase()];
+      let match = bearerRE.exec(header) ;
       return match[1];
     }
   }
