@@ -76,11 +76,46 @@ module.exports = {
 };
 ```
 
-The post request to this route should include POST or GET data with the keys `access_token` and optionally, `refresh_token` set to the credentials you receive from facebook.
+### Client Requests
+
+Clients can send requests to routes that use passport-facebook-token authentication using query parms, body, or HTTP headers. Clients will need to transmit the `access_token`
+and optionally the `refresh_token` that are received from facebook after login.
+
+#### Sending access_token as a Query parameter
 
 ```
 GET /auth/facebook/token?access_token=<TOKEN_HERE>
 ```
+
+#### Sending access token as an HTTP header
+
+Clients can choose to send the access token using the Oauth2 Bearer token (RFC 6750) compliant format
+
+```
+GET /resource HTTP/1.1
+Host: server.example.com
+Authorization: Bearer base64_access_token_string
+```
+
+optionally a client can send via a custom (default access_token) header
+
+```
+GET /resource HTTP/1.1
+Host: server.example.com
+access_token: base64_access_token_string
+```
+
+#### Sending access token as an HTTP body
+
+Clients can transmit the access token via the body
+
+```
+GET /resource HTTP/1.1
+Host: server.example.com
+
+access_token=base64_access_token_string
+```
+  
 
 ## Credits
 

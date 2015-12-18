@@ -34,14 +34,14 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
     super(options, verify);
 
     this.name = 'facebook-token';
+    this._authorizationField = options.authorizationField || 'Authorization';
     this._accessTokenField = options.accessTokenField || 'access_token';
     this._refreshTokenField = options.refreshTokenField || 'refresh_token';
     this._profileURL = options.profileURL || 'https://graph.facebook.com/v2.4/me';
     this._profileFields = options.profileFields || ['id', 'displayName', 'name', 'emails'];
     this._clientSecret = options.clientSecret;
     this._enableProof = typeof options.enableProof === 'boolean' ? options.enableProof : true;
-    this._passReqToCallback = options.passReqToCallback;
-
+    this._passReqToCallback = options.passReqToCallback;    
     this._oauth2.useAuthorizationHeaderforGET(false);
   }
 
@@ -51,9 +51,9 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
    * @param {Object} options
    */
   authenticate(req, options) {
-    let accessToken = (req.body && req.body[this._accessTokenField]) || (req.query && req.query[this._accessTokenField]) || (req.headers && req.headers[this._accessTokenField]);
+    let accessToken = (req.body && req.body[this._accessTokenField]) || (req.query && req.query[this._accessTokenField]) || (FacebookTokenStrategy.parseAccessTokenHeader(req.headers, this._accessTokenField, this._authorizationField));
     let refreshToken = (req.body && req.body[this._refreshTokenField]) || (req.query && req.query[this._refreshTokenField]) || (req.headers && req.headers[this._refreshTokenField]);
-
+    
     if (!accessToken) return this.fail({message: `You should provide ${this._accessTokenField}`});
 
     this._loadUserProfile(accessToken, (error, profile) => {
@@ -160,4 +160,24 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
 
     return profileFields.reduce((acc, field) => acc.concat(map[field] || field), []).join(',');
   }
+  
+  /**
+  * Parses an access token from the headers object using a custom header or via OAuth2 RFC6750 bearer authorization
+  * @param {Object} headers header object from a request
+  * @param {String} accessTokenField custom http field with access token directly set
+  * @param {String} authorizationField secondary http field that is RFC6750 compliant
+  * @returns {String} access token
+  */ 
+  static parseAccessTokenHeader(headers, accessTokenField, authorizationField) {
+    let bearerRE = /Bearer\ (.*)/;
+    let match = bearerRE.exec(headers[authorizationField]); 
+    
+    if ( headers && headers[accessTokenField] ) {
+      return headers[accessTokenField];      
+    }
+    else if ( headers && headers[authorizationField] && match ) {
+      return match[1];
+    }
+  }
+  
 }
