@@ -51,7 +51,7 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
    * @param {Object} options
    */
   authenticate(req, options) {
-    let accessToken = (req.body && req.body[this._accessTokenField]) || (req.query && req.query[this._accessTokenField]) || (FacebookTokenStrategy.parseAccessTokenHeader(req.headers, this._accessTokenField, this._authorizationField));
+    let accessToken =  (FacebookTokenStrategy.parseAccessToken(req, this._accessTokenField, this._authorizationField));
     let refreshToken = (req.body && req.body[this._refreshTokenField]) || (req.query && req.query[this._refreshTokenField]) || (req.headers && req.headers[this._refreshTokenField]);
     
     if (!accessToken) return this.fail({message: `You should provide ${this._accessTokenField}`});
@@ -162,21 +162,32 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
   }
   
   /**
-  * Parses an access token from the headers object using a custom header or via OAuth2 RFC6750 bearer authorization
+  * Parses an access token from request body, query, or headers using the accessTokenField parameter. When parsing the
+  * request header there are two possible strategies
+  *  - parse header object using a custom header specified by accessTokenField
+  *  - parse header object via OAuth2 RFC6750 bearer authorization
+  * 
   * @param {Object} headers header object from a request
   * @param {String} accessTokenField custom http field with access token directly set
   * @param {String} authorizationField secondary http field that is RFC6750 compliant
   * @returns {String} access token
   */ 
-  static parseAccessTokenHeader(headers, accessTokenField, authorizationField) {
+  static parseAccessToken(req, accessTokenField, authorizationField) {
+    
+    if (req.body && req.body[accessTokenField]) {
+        return req.body[accessTokenField]
+    }
+    else if (req.query && req.query[accessTokenField]) {
+        return req.query[accessTokenField];
+    }
     // headers should be case insensitive, some libraries (like unirest) will lowercase all headers automatically
     // lowercasing custom accessTokenField since users can override it        
-    if ( headers && (headers[accessTokenField] || headers[accessTokenField.toLowerCase()]) ) {
-      return headers[accessTokenField];      
+    else if ( req.headers && (req.headers[accessTokenField] || req.headers[accessTokenField.toLowerCase()]) ) {
+      return req.headers[accessTokenField];      
     }    
-    else if ( headers && (headers[authorizationField] ||  headers[authorizationField.toLowerCase()]) ) {
+    else if ( req.headers && (req.headers[authorizationField] ||  req.headers[authorizationField.toLowerCase()]) ) {
       let bearerRE = /Bearer\ (.*)/;
-      let header = headers[authorizationField] ||  headers[authorizationField.toLowerCase()];
+      let header = req.headers[authorizationField] ||  req.headers[authorizationField.toLowerCase()];
       let match = bearerRE.exec(header) ;
       return match[1];
     }
