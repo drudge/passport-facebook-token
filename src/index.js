@@ -169,12 +169,12 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
     */
     parseOAuth2Token(req) {
         const OAuth2AuthorizationField = 'Authorization';
+        let headerValue = (req.headers && (req.headers[OAuth2AuthorizationField] || req.headers[OAuth2AuthorizationField.toLowerCase()]));
         return (
-            req.headers && (req.headers[OAuth2AuthorizationField] || req.headers[OAuth2AuthorizationField.toLowerCase()]) && (()=>{                
-                const bearerRE = /Bearer\ (.*)/;
-                let header = req.headers[OAuth2AuthorizationField] || req.headers[OAuth2AuthorizationField.toLowerCase()];
-                let match = bearerRE.exec(header);
-                return match[1];
+            headerValue && (()=>{                
+                const bearerRE = /Bearer\ (.*)/;                
+                let match = bearerRE.exec(headerValue);
+                return (match && match[1]);
             })()
         );        
     }
