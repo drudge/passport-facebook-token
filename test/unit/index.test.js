@@ -82,6 +82,63 @@ describe('FacebookTokenStrategy:authenticate', () => {
         })
         .authenticate({});
     });
+    
+    it('Should properly parse access token from OAuth2 bearer header', done => {
+      chai
+        .passport
+        .use(strategy)
+        .success((user, info) => {
+          assert.typeOf(user, 'object');
+          assert.typeOf(info, 'object');
+          assert.deepEqual(info, {info: 'foo'});
+          done();
+        })
+        .req(req => {
+          req.headers = {
+            Authorization: 'Bearer access_token',
+            refresh_token: 'refresh_token'           
+          }
+        })
+        .authenticate({});
+    });
+    
+    it('Should properly parse access token from OAuth2 bearer header as lowercase', done => {
+      chai
+        .passport
+        .use(strategy)
+        .success((user, info) => {
+          assert.typeOf(user, 'object');
+          assert.typeOf(info, 'object');
+          assert.deepEqual(info, {info: 'foo'});
+          done();
+        })
+        .req(req => {
+          req.headers = {
+            authorization: 'Bearer access_token',
+            refresh_token: 'refresh_token'           
+          }
+        })
+        .authenticate({});
+    });
+    
+    it('Should properly parse access token from access_token header', done => {
+      chai
+        .passport
+        .use(strategy)
+        .success((user, info) => {
+          assert.typeOf(user, 'object');
+          assert.typeOf(info, 'object');
+          assert.deepEqual(info, {info: 'foo'});
+          done();
+        })
+        .req(req => {
+          req.headers = {
+            access_token: 'access_token',
+            refresh_token: 'refresh_token'           
+          }
+        })
+        .authenticate({});
+    });
 
     it('Should properly call fail if access_token is not provided', done => {
       chai.passport.use(strategy).fail(error => {

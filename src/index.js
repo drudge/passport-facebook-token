@@ -41,7 +41,6 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
     this._clientSecret = options.clientSecret;
     this._enableProof = typeof options.enableProof === 'boolean' ? options.enableProof : true;
     this._passReqToCallback = options.passReqToCallback;
-
     this._oauth2.useAuthorizationHeaderforGET(false);
   }
 
@@ -51,10 +50,10 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
    * @param {Object} options
    */
   authenticate(req, options) {
-    let accessToken = (req.body && req.body[this._accessTokenField]) || (req.query && req.query[this._accessTokenField]) || (req.headers && req.headers[this._accessTokenField]);
-    let refreshToken = (req.body && req.body[this._refreshTokenField]) || (req.query && req.query[this._refreshTokenField]) || (req.headers && req.headers[this._refreshTokenField]);
+    let accessToken = this.lookup(req, this._accessTokenField);
+    let refreshToken = this.lookup(req, this._refreshTokenField);
 
-    if (!accessToken) return this.fail({message: `You should provide ${this._accessTokenField}`});
+    if (!accessToken) return this.fail({ message: `You should provide ${this._accessTokenField}` });
 
     this._loadUserProfile(accessToken, (error, profile) => {
       if (error) return this.error(error);
@@ -99,7 +98,7 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
     if (this._enableProof) {
       // For further details, refer to https://developers.facebook.com/docs/reference/api/securing-graph-api/
       let proof = crypto.createHmac('sha256', this._clientSecret).update(accessToken).digest('hex');
-      url.search = `${url.search ? url.search + '&' : ''}appsecret_proof=${encodeURIComponent(proof)}`;
+      url.search = `${url.search ? url.search + '&' : ''}appsecret_proof=${encodeURIComponent(proof) }`;
     }
 
     if (this._profileFields) {
@@ -160,4 +159,44 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
 
     return profileFields.reduce((acc, field) => acc.concat(map[field] || field), []).join(',');
   }
+    
+  /**
+  * Parses an OAuth2 RFC6750 bearer authorization token, this method additionally is RFC 2616 compliant and respects
+  * case insensitive headers. 
+  * 
+  * @param {Object} req http request object
+  * @returns {String} value for field within body, query, or headers
+  */
+  parseOAuth2Token(req) {
+    const OAuth2AuthorizationField = 'Authorization';
+    let headerValue = (req.headers && (req.headers[OAuth2AuthorizationField] || req.headers[OAuth2AuthorizationField.toLowerCase()]));
+    return (
+      headerValue && (() => {
+        const bearerRE = /Bearer\ (.*)/;
+        let match = bearerRE.exec(headerValue);
+        return (match && match[1]);
+      })()
+      );
+  }
+    
+  /**
+  * Performs a lookup of the param field within the request, this method handles searhing the body, query, and header. 
+  * Additionally this method is RFC 2616 compliant and allows for case insensitive headers. This method additionally will
+  * delegate outwards to the OAuth2Token parser to validate whether a OAuth2 bearer token has been provided.     
+  * 
+  * @param {Object} req http request object
+  * @param {String} field 
+  * @returns {String} value for field within body, query, or headers
+  */
+  lookup(req, field) {
+    return (
+      req.body && req.body[field] ||
+      req.query && req.query[field] ||
+      req.headers && (req.headers[field] || req.headers[field.toLowerCase()]) ||
+      this.parseOAuth2Token(req)
+      );
+  }
+
+
+
 }
