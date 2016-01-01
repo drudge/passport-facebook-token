@@ -53,7 +53,7 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
     let accessToken = this.lookup(req, this._accessTokenField);
     let refreshToken = this.lookup(req, this._refreshTokenField);
 
-    if (!accessToken) return this.fail({ message: `You should provide ${this._accessTokenField}` });
+    if (!accessToken) return this.fail({message: `You should provide ${this._accessTokenField}`});
 
     this._loadUserProfile(accessToken, (error, profile) => {
       if (error) return this.error(error);
@@ -141,6 +141,44 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
   }
 
   /**
+   * Parses an OAuth2 RFC6750 bearer authorization token, this method additionally is RFC 2616 compliant and respects
+   * case insensitive headers.
+   *
+   * @param {Object} req http request object
+   * @returns {String} value for field within body, query, or headers
+   */
+  parseOAuth2Token(req) {
+    const OAuth2AuthorizationField = 'Authorization';
+    const headerValue = (req.headers && (req.headers[OAuth2AuthorizationField] || req.headers[OAuth2AuthorizationField.toLowerCase()]));
+
+    return (
+      headerValue && (() => {
+        const bearerRE = /Bearer\ (.*)/;
+        let match = bearerRE.exec(headerValue);
+        return (match && match[1]);
+      })()
+    );
+  }
+
+  /**
+   * Performs a lookup of the param field within the request, this method handles searhing the body, query, and header.
+   * Additionally this method is RFC 2616 compliant and allows for case insensitive headers. This method additionally will
+   * delegate outwards to the OAuth2Token parser to validate whether a OAuth2 bearer token has been provided.
+   *
+   * @param {Object} req http request object
+   * @param {String} field
+   * @returns {String} value for field within body, query, or headers
+   */
+  lookup(req, field) {
+    return (
+      req.body && req.body[field] ||
+      req.query && req.query[field] ||
+      req.headers && (req.headers[field] || req.headers[field.toLowerCase()]) ||
+      this.parseOAuth2Token(req)
+    );
+  }
+
+  /**
    * Converts array of profile fields to string
    * @param {Array} _profileFields Profile fields i.e. ['id', 'email']
    * @returns {String}
@@ -159,44 +197,4 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
 
     return profileFields.reduce((acc, field) => acc.concat(map[field] || field), []).join(',');
   }
-    
-  /**
-  * Parses an OAuth2 RFC6750 bearer authorization token, this method additionally is RFC 2616 compliant and respects
-  * case insensitive headers. 
-  * 
-  * @param {Object} req http request object
-  * @returns {String} value for field within body, query, or headers
-  */
-  parseOAuth2Token(req) {
-    const OAuth2AuthorizationField = 'Authorization';
-    let headerValue = (req.headers && (req.headers[OAuth2AuthorizationField] || req.headers[OAuth2AuthorizationField.toLowerCase()]));
-    return (
-      headerValue && (() => {
-        const bearerRE = /Bearer\ (.*)/;
-        let match = bearerRE.exec(headerValue);
-        return (match && match[1]);
-      })()
-      );
-  }
-    
-  /**
-  * Performs a lookup of the param field within the request, this method handles searhing the body, query, and header. 
-  * Additionally this method is RFC 2616 compliant and allows for case insensitive headers. This method additionally will
-  * delegate outwards to the OAuth2Token parser to validate whether a OAuth2 bearer token has been provided.     
-  * 
-  * @param {Object} req http request object
-  * @param {String} field 
-  * @returns {String} value for field within body, query, or headers
-  */
-  lookup(req, field) {
-    return (
-      req.body && req.body[field] ||
-      req.query && req.query[field] ||
-      req.headers && (req.headers[field] || req.headers[field.toLowerCase()]) ||
-      this.parseOAuth2Token(req)
-      );
-  }
-
-
-
 }
