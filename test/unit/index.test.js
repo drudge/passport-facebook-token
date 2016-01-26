@@ -82,7 +82,7 @@ describe('FacebookTokenStrategy:authenticate', () => {
         })
         .authenticate({});
     });
-    
+
     it('Should properly parse access token from OAuth2 bearer header', done => {
       chai
         .passport
@@ -96,12 +96,12 @@ describe('FacebookTokenStrategy:authenticate', () => {
         .req(req => {
           req.headers = {
             Authorization: 'Bearer access_token',
-            refresh_token: 'refresh_token'           
+            refresh_token: 'refresh_token'
           }
         })
         .authenticate({});
     });
-    
+
     it('Should properly parse access token from OAuth2 bearer header as lowercase', done => {
       chai
         .passport
@@ -115,12 +115,12 @@ describe('FacebookTokenStrategy:authenticate', () => {
         .req(req => {
           req.headers = {
             authorization: 'Bearer access_token',
-            refresh_token: 'refresh_token'           
+            refresh_token: 'refresh_token'
           }
         })
         .authenticate({});
     });
-    
+
     it('Should properly parse access token from access_token header', done => {
       chai
         .passport
@@ -134,7 +134,7 @@ describe('FacebookTokenStrategy:authenticate', () => {
         .req(req => {
           req.headers = {
             access_token: 'access_token',
-            refresh_token: 'refresh_token'           
+            refresh_token: 'refresh_token'
           }
         })
         .authenticate({});
@@ -361,6 +361,28 @@ describe('FacebookTokenStrategy:userProfile', () => {
       done();
     });
   });
+
+  it('Should use the proper profile image link with profileImage', done => {
+    let strategy = new FacebookTokenStrategy({
+      clientID: '123',
+      clientSecret: '123',
+      profileImage: {
+        width: 1520,
+        height: 1520
+      }
+    }, BLANK_FUNCTION);
+
+    sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
+
+    strategy.userProfile('accessToken', (error, profile) => {
+      if (error) return done(error);
+
+      assert.equal(profile.photos[0].value, 'https://graph.facebook.com/794955667239296/picture?width=1520&height=1520');
+
+      strategy._oauth2.get.restore();
+      done();
+    });
+  })
 });
 
 describe('FacebookTokenStrategy:convertProfileFields', () => {
