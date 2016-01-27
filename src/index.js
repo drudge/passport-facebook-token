@@ -38,6 +38,7 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
     this._refreshTokenField = options.refreshTokenField || 'refresh_token';
     this._profileURL = options.profileURL || 'https://graph.facebook.com/v2.4/me';
     this._profileFields = options.profileFields || ['id', 'displayName', 'name', 'emails'];
+    this._profileImage = options.profileImage || {};
     this._clientSecret = options.clientSecret;
     this._enableProof = typeof options.enableProof === 'boolean' ? options.enableProof : true;
     this._passReqToCallback = options.passReqToCallback;
@@ -113,6 +114,13 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
 
       try {
         let json = JSON.parse(body);
+
+        let imageUrl = uri.parse(`https://graph.facebook.com/${json.id}/picture`);
+        if (this._profileImage.width) imageUrl.search = `width=${this._profileImage.width}`;
+        if (this._profileImage.height) imageUrl.search = `${imageUrl.search ? imageUrl.search + '&' : ''}height=${this._profileImage.height}`;
+        imageUrl.search = `${imageUrl.search ? imageUrl.search : 'type=large'}`;
+        imageUrl = uri.format(imageUrl);
+
         let profile = {
           provider: 'facebook',
           id: json.id,
@@ -127,7 +135,7 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
             value: json.email || ''
           }],
           photos: [{
-            value: `https://graph.facebook.com/${json.id}/picture?type=large`
+            value: imageUrl
           }],
           _raw: body,
           _json: json
