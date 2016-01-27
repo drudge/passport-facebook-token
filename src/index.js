@@ -25,8 +25,8 @@ import { OAuth2Strategy, InternalOAuthError } from 'passport-oauth';
  */
 export default class FacebookTokenStrategy extends OAuth2Strategy {
   constructor(_options, _verify) {
-    let options = _options || {};
-    let verify = _verify;
+    const options = _options || {};
+    const verify = _verify;
 
     options.authorizationURL = options.authorizationURL || 'https://www.facebook.com/v2.4/dialog/oauth';
     options.tokenURL = options.tokenURL || 'https://graph.facebook.com/oauth/access_token';
@@ -51,8 +51,8 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
    * @param {Object} options
    */
   authenticate(req, options) {
-    let accessToken = this.lookup(req, this._accessTokenField);
-    let refreshToken = this.lookup(req, this._refreshTokenField);
+    const accessToken = this.lookup(req, this._accessTokenField);
+    const refreshToken = this.lookup(req, this._refreshTokenField);
 
     if (!accessToken) return this.fail({message: `You should provide ${this._accessTokenField}`});
 
@@ -94,34 +94,36 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
    * @param {Function} done
    */
   userProfile(accessToken, done) {
-    let url = uri.parse(this._profileURL);
+    let profileURL = uri.parse(this._profileURL);
 
+    // For further details, refer to https://developers.facebook.com/docs/reference/api/securing-graph-api/
     if (this._enableProof) {
-      // For further details, refer to https://developers.facebook.com/docs/reference/api/securing-graph-api/
-      let proof = crypto.createHmac('sha256', this._clientSecret).update(accessToken).digest('hex');
-      url.search = `${url.search ? url.search + '&' : ''}appsecret_proof=${encodeURIComponent(proof) }`;
+      const proof = crypto.createHmac('sha256', this._clientSecret).update(accessToken).digest('hex');
+      profileURL.search = `${profileURL.search ? profileURL.search + '&' : ''}appsecret_proof=${encodeURIComponent(proof) }`;
     }
 
+    // Parse profile fields
     if (this._profileFields) {
-      let fields = FacebookTokenStrategy.convertProfileFields(this._profileFields);
-      url.search = `${url.search ? url.search + '&' : ''}fields=${fields}`;
+      const fields = FacebookTokenStrategy.convertProfileFields(this._profileFields);
+      profileURL.search = `${profileURL.search ? profileURL.search + '&' : ''}fields=${fields}`;
     }
 
-    url = uri.format(url);
+    profileURL = uri.format(profileURL);
 
-    this._oauth2.get(url, accessToken, (error, body, res) => {
+    this._oauth2.get(profileURL, accessToken, (error, body, res) => {
       if (error) return done(new InternalOAuthError('Failed to fetch user profile', error));
 
       try {
-        let json = JSON.parse(body);
+        const json = JSON.parse(body);
 
+        // Get image URL based on profileImage options
         let imageUrl = uri.parse(`https://graph.facebook.com/${json.id}/picture`);
         if (this._profileImage.width) imageUrl.search = `width=${this._profileImage.width}`;
         if (this._profileImage.height) imageUrl.search = `${imageUrl.search ? imageUrl.search + '&' : ''}height=${this._profileImage.height}`;
         imageUrl.search = `${imageUrl.search ? imageUrl.search : 'type=large'}`;
         imageUrl = uri.format(imageUrl);
 
-        let profile = {
+        const profile = {
           provider: 'facebook',
           id: json.id,
           displayName: json.name || '',
