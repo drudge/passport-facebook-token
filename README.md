@@ -110,7 +110,7 @@ access_token: base64_access_token_string
 Clients can transmit the access token via the body
 
 ```
-GET /resource HTTP/1.1
+POST /resource HTTP/1.1
 Host: server.example.com
 
 access_token=base64_access_token_string
