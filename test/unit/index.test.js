@@ -25,6 +25,27 @@ describe('FacebookTokenStrategy:init', () => {
   it('Should properly throw exception when options is empty', () => {
     assert.throw(() => new FacebookTokenStrategy(), Error);
   });
+  
+  it('Should use the default fb graph version when no explicit version is specified', () => {
+  	let strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, BLANK_FUNCTION);
+	assert.equal(strategy._fbGraphVersion, 'v2.6');
+    assert.equal(strategy._oauth2._accessTokenUrl,'https://graph.facebook.com/v2.6/oauth/access_token');
+    assert.equal(strategy._oauth2._authorizeUrl,'https://www.facebook.com/v2.6/dialog/oauth');
+    assert.equal(strategy._profileURL,'https://graph.facebook.com/v2.6/me');
+  });
+  
+  it('Should use the explicit version, if specified', () => {
+	let strategy = new FacebookTokenStrategy({
+  	  clientID: '123',
+  	  clientSecret: '123',
+	  fbGraphVersion: 'v2.4'
+	}, BLANK_FUNCTION);
+	assert.equal(strategy._fbGraphVersion, 'v2.4');  
+    assert.equal(strategy._oauth2._accessTokenUrl,'https://graph.facebook.com/v2.4/oauth/access_token');
+    assert.equal(strategy._oauth2._authorizeUrl,'https://www.facebook.com/v2.4/dialog/oauth');
+    assert.equal(strategy._profileURL,'https://graph.facebook.com/v2.4/me');	
+  });
+  
 });
 
 describe('FacebookTokenStrategy:authenticate', () => {
@@ -295,7 +316,7 @@ describe('FacebookTokenStrategy:userProfile', () => {
       assert.equal(profile.name.givenName, 'Eugene');
       assert.equal(profile.gender, 'male');
       assert.equal(profile.emails[0].value, 'ghaiklor@gmail.com');
-      assert.equal(profile.photos[0].value, 'https://graph.facebook.com/794955667239296/picture?type=large');
+      assert.equal(profile.photos[0].value, 'https://graph.facebook.com/v2.6/794955667239296/picture?type=large');
       assert.equal(typeof profile._raw, 'string');
       assert.equal(typeof profile._json, 'object');
 
@@ -328,7 +349,7 @@ describe('FacebookTokenStrategy:userProfile', () => {
     sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
 
     strategy.userProfile('accessToken', (error, profile) => {
-      assert.equal(strategy._oauth2.get.getCall(0).args[0], 'https://graph.facebook.com/v2.4/me?appsecret_proof=8c340bd01643ab69939ca971314d7a3d64bfb18946cdde566f12fdbf6707d182&fields=id,name,last_name,first_name,middle_name,email');
+      assert.equal(strategy._oauth2.get.getCall(0).args[0], 'https://graph.facebook.com/v2.6/me?appsecret_proof=8c340bd01643ab69939ca971314d7a3d64bfb18946cdde566f12fdbf6707d182&fields=id,name,last_name,first_name,middle_name,email');
       strategy._oauth2.get.restore();
       done();
     });
@@ -344,7 +365,7 @@ describe('FacebookTokenStrategy:userProfile', () => {
     sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
 
     strategy.userProfile('accessToken', (error, profile) => {
-      assert.equal(strategy._oauth2.get.getCall(0).args[0], 'https://graph.facebook.com/v2.4/me?appsecret_proof=8c340bd01643ab69939ca971314d7a3d64bfb18946cdde566f12fdbf6707d182&fields=last_name,first_name,middle_name,custom');
+      assert.equal(strategy._oauth2.get.getCall(0).args[0], 'https://graph.facebook.com/v2.6/me?appsecret_proof=8c340bd01643ab69939ca971314d7a3d64bfb18946cdde566f12fdbf6707d182&fields=last_name,first_name,middle_name,custom');
       strategy._oauth2.get.restore();
       done();
     });
@@ -377,7 +398,7 @@ describe('FacebookTokenStrategy:userProfile', () => {
     strategy.userProfile('accessToken', (error, profile) => {
       if (error) return done(error);
 
-      assert.equal(profile.photos[0].value, 'https://graph.facebook.com/794955667239296/picture?width=1520&height=1520');
+      assert.equal(profile.photos[0].value, 'https://graph.facebook.com/v2.6/794955667239296/picture?width=1520&height=1520');
 
       strategy._oauth2.get.restore();
       done();
