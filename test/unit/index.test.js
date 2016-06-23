@@ -27,20 +27,20 @@ describe('FacebookTokenStrategy:init', () => {
   });
   
   it('Should use the default fb graph version when no explicit version is specified', () => {
-  	let strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, BLANK_FUNCTION);
-	assert.equal(strategy._fbGraphVersion, 'v2.6');
+    let strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, BLANK_FUNCTION);
+    assert.equal(strategy._fbGraphVersion, 'v2.6');
     assert.equal(strategy._oauth2._accessTokenUrl,'https://graph.facebook.com/v2.6/oauth/access_token');
     assert.equal(strategy._oauth2._authorizeUrl,'https://www.facebook.com/v2.6/dialog/oauth');
     assert.equal(strategy._profileURL,'https://graph.facebook.com/v2.6/me');
   });
   
   it('Should use the explicit version, if specified', () => {
-	let strategy = new FacebookTokenStrategy({
-  	  clientID: '123',
-  	  clientSecret: '123',
-	  fbGraphVersion: 'v2.4'
-	}, BLANK_FUNCTION);
-	assert.equal(strategy._fbGraphVersion, 'v2.4');  
+    let strategy = new FacebookTokenStrategy({
+      clientID: '123',
+      clientSecret: '123',
+      fbGraphVersion: 'v2.4'
+    }, BLANK_FUNCTION);
+    assert.equal(strategy._fbGraphVersion, 'v2.4');  
     assert.equal(strategy._oauth2._accessTokenUrl,'https://graph.facebook.com/v2.4/oauth/access_token');
     assert.equal(strategy._oauth2._authorizeUrl,'https://www.facebook.com/v2.4/dialog/oauth');
     assert.equal(strategy._profileURL,'https://graph.facebook.com/v2.4/me');	
