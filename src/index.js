@@ -27,22 +27,25 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
   constructor(_options, _verify) {
     const options = _options || {};
     const verify = _verify;
+    const _fbGraphVersion = options.fbGraphVersion || 'v2.6';
+	
 
-    options.authorizationURL = options.authorizationURL || 'https://www.facebook.com/v2.4/dialog/oauth';
-    options.tokenURL = options.tokenURL || 'https://graph.facebook.com/oauth/access_token';
+    options.authorizationURL = options.authorizationURL || `https://www.facebook.com/${_fbGraphVersion}/dialog/oauth`;
+    options.tokenURL = options.tokenURL || `https://graph.facebook.com/${_fbGraphVersion}/oauth/access_token`;
 
     super(options, verify);
 
     this.name = 'facebook-token';
     this._accessTokenField = options.accessTokenField || 'access_token';
     this._refreshTokenField = options.refreshTokenField || 'refresh_token';
-    this._profileURL = options.profileURL || 'https://graph.facebook.com/v2.4/me';
+    this._profileURL = options.profileURL || `https://graph.facebook.com/${_fbGraphVersion}/me`;
     this._profileFields = options.profileFields || ['id', 'displayName', 'name', 'emails'];
     this._profileImage = options.profileImage || {};
     this._clientSecret = options.clientSecret;
     this._enableProof = typeof options.enableProof === 'boolean' ? options.enableProof : true;
     this._passReqToCallback = options.passReqToCallback;
     this._oauth2.useAuthorizationHeaderforGET(false);
+    this._fbGraphVersion = _fbGraphVersion;
   }
 
   /**
@@ -117,7 +120,7 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
         const json = JSON.parse(body);
 
         // Get image URL based on profileImage options
-        let imageUrl = uri.parse(`https://graph.facebook.com/${json.id}/picture`);
+        let imageUrl = uri.parse(`https://graph.facebook.com/${this._fbGraphVersion}/${json.id}/picture`);
         if (this._profileImage.width) imageUrl.search = `width=${this._profileImage.width}`;
         if (this._profileImage.height) imageUrl.search = `${imageUrl.search ? imageUrl.search + '&' : ''}height=${this._profileImage.height}`;
         imageUrl.search = `${imageUrl.search ? imageUrl.search : 'type=large'}`;
