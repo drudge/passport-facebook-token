@@ -50,6 +50,7 @@ describe('FacebookTokenStrategy:init', () => {
 });
 
 describe('FacebookTokenStrategy:authenticate', () => {
+
   describe('Authenticate without passReqToCallback', () => {
     let strategy;
 
@@ -277,7 +278,10 @@ describe('FacebookTokenStrategy:authenticate', () => {
         return next(null, profile, {info: 'foo'});
       });
       sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
-      sinon.stub(strategy._oauth2, 'getProtectedResource', (url, accessToken, next) => next(null, fakeLongLiveToken, null));
+      sinon.stub(strategy._oauth2, 'getProtectedResource', (url, accessToken, next) => next(null, JSON.stringify({
+        "access_token":"LONGLIVETOKEN",
+        "token_type":"bearer"
+      }), null));
     });
 
     after(() => {strategy._oauth2.get.restore(); strategy._oauth2.getProtectedResource.restore()});
@@ -347,6 +351,68 @@ describe('FacebookTokenStrategy:authenticate', () => {
   });
 
   describe('Failed authentications', () => {
+    it('Should properly return error on _getLLT', done => {
+      let strategy = new FacebookTokenStrategy({
+        clientID: '123',
+        clientSecret: '123',
+        getLongLivedToken: true
+      }, (accessToken, refreshToken, profile, next) => {
+        assert.equal(accessToken, 'access_token');
+        assert.equal(refreshToken, 'refresh_token');
+        assert.typeOf(profile, 'object');
+        assert.typeOf(next, 'function');
+        return next(null, profile, {info: 'foo'});
+      });
+      sinon.stub(strategy._oauth2, 'getProtectedResource', (url, access_token, next) => next(new Error('Some error occurred'),null,null));
+
+      strategy._getLLT('accessToken', (error, longLivedToken, expires) => {
+        console.log("ERROR",error);
+        assert.instanceOf(error, Error);
+        strategy._oauth2.getProtectedResource.restore();
+        done();
+      });
+    });
+    it('Should properly return error on facebook response invalid json data', done => {
+      let strategy = new FacebookTokenStrategy({
+        clientID: '123',
+        clientSecret: '123',
+        getLongLivedToken: true
+      }, (accessToken, refreshToken, profile, next) => {
+        assert.equal(accessToken, 'access_token');
+        assert.equal(refreshToken, 'refresh_token');
+        assert.typeOf(profile, 'object');
+        assert.typeOf(next, 'function');
+        return next(null, profile, {info: 'foo'});
+      });
+      sinon.stub(strategy._oauth2, 'getProtectedResource', (url, access_token, next) => next(null,"not validJsone",null));
+
+      strategy._getLLT('accessToken', (error, longLivedToken, expires) => {
+        assert.instanceOf(error, Error);
+        strategy._oauth2.getProtectedResource.restore();
+        done();
+      });
+    });
+    it('Should properly return error on facebook response invalid json data content', done => {
+      let strategy = new FacebookTokenStrategy({
+        clientID: '123',
+        clientSecret: '123',
+        getLongLivedToken: true
+      }, (accessToken, refreshToken, profile, next) => {
+        assert.equal(accessToken, 'access_token');
+        assert.equal(refreshToken, 'refresh_token');
+        assert.typeOf(profile, 'object');
+        assert.typeOf(next, 'function');
+        return next(null, profile, {info: 'foo'});
+      });
+      sinon.stub(strategy._oauth2, 'getProtectedResource', (url, access_token, next) => next(null,"{}",null));
+
+      strategy._getLLT('accessToken', (error, longLivedToken, expires) => {
+        console.log("ERROR",error);
+        assert.instanceOf(error, Error);
+        strategy._oauth2.getProtectedResource.restore();
+        done();
+      });
+    });
     it('Should properly return error on loadUserProfile', done => {
       let strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, (accessToken, refreshToken, profile, next) => {
         assert.equal(accessToken, 'access_token');
@@ -430,6 +496,7 @@ describe('FacebookTokenStrategy:authenticate', () => {
         })
         .authenticate({});
     });
+
   });
 });
 

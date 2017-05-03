@@ -268,7 +268,7 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
       try {
         body=JSON.parse(body);
         if(typeof body.access_token === "undefined"){
-          return done('facebook was unable to provide a long-lived token');
+          return done(new InternalOAuthError('facebook was unable to provide a long-lived token'));
         }
         if(typeof body.expires_in === "undefined"){
           body.expires_in = null;
