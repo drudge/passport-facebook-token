@@ -20,16 +20,15 @@ import { OAuth2Strategy, InternalOAuthError } from 'passport-oauth';
  *   clientID: '123456789',
  *   clientSecret: 'shhh-its-a-secret'
  * }), (accessToken, refreshToken, profile, done) => {
- *   User.findOrCreate({facebookId: profile.id}, done);
+ *   User.findOrCreate({ facebookId: profile.id }, done);
  * });
  */
 export default class FacebookTokenStrategy extends OAuth2Strategy {
   constructor(_options, _verify) {
     const options = _options || {};
     const verify = _verify;
-    const _fbGraphVersion = options.fbGraphVersion || 'v2.6';
+    const _fbGraphVersion = options.fbGraphVersion || 'v3.0';
 	
-
     options.authorizationURL = options.authorizationURL || `https://www.facebook.com/${_fbGraphVersion}/dialog/oauth`;
     options.tokenURL = options.tokenURL || `https://graph.facebook.com/${_fbGraphVersion}/oauth/access_token`;
 
