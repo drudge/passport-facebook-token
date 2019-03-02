@@ -2,6 +2,7 @@ import chai, { assert } from 'chai';
 import sinon from 'sinon';
 import FacebookTokenStrategy from '../../src/index';
 import fakeProfile from '../fixtures/profile';
+import fakeLongLiveToken from '../fixtures/longLiveToken';
 
 const STRATEGY_CONFIG = {
   clientID: '123',
@@ -25,7 +26,7 @@ describe('FacebookTokenStrategy:init', () => {
   it('Should properly throw exception when options is empty', () => {
     assert.throw(() => new FacebookTokenStrategy(), Error);
   });
-  
+
   it('Should use the default fb graph version when no explicit version is specified', () => {
     let strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, BLANK_FUNCTION);
     assert.equal(strategy._fbGraphVersion, 'v2.6');
@@ -33,22 +34,23 @@ describe('FacebookTokenStrategy:init', () => {
     assert.equal(strategy._oauth2._authorizeUrl,'https://www.facebook.com/v2.6/dialog/oauth');
     assert.equal(strategy._profileURL,'https://graph.facebook.com/v2.6/me');
   });
-  
+
   it('Should use the explicit version, if specified', () => {
     let strategy = new FacebookTokenStrategy({
       clientID: '123',
       clientSecret: '123',
       fbGraphVersion: 'v2.4'
     }, BLANK_FUNCTION);
-    assert.equal(strategy._fbGraphVersion, 'v2.4');  
+    assert.equal(strategy._fbGraphVersion, 'v2.4');
     assert.equal(strategy._oauth2._accessTokenUrl,'https://graph.facebook.com/v2.4/oauth/access_token');
     assert.equal(strategy._oauth2._authorizeUrl,'https://www.facebook.com/v2.4/dialog/oauth');
-    assert.equal(strategy._profileURL,'https://graph.facebook.com/v2.4/me');	
+    assert.equal(strategy._profileURL,'https://graph.facebook.com/v2.4/me');
   });
-  
+
 });
 
 describe('FacebookTokenStrategy:authenticate', () => {
+
   describe('Authenticate without passReqToCallback', () => {
     let strategy;
 
@@ -213,7 +215,204 @@ describe('FacebookTokenStrategy:authenticate', () => {
     });
   });
 
+  describe('Authenticate without passReqToCallback with long live token, not stored', () => {
+    let strategy;
+
+    before(() => {
+      strategy = new FacebookTokenStrategy({
+        clientID: '123',
+        clientSecret: '123',
+        getLongLivedToken: true
+      }, (accessToken, refreshToken, profile, next) => {
+        assert.equal(accessToken, 'access_token');
+        assert.equal(refreshToken, 'refresh_token');
+        assert.typeOf(profile, 'object');
+        assert.typeOf(next, 'function');
+        return next(null, profile, {info: 'foo'});
+      });
+      sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
+      sinon.stub(strategy, '_getLLT', (accessToken, next) => next(null, fakeProfile, null));
+    });
+
+    after(() => strategy._oauth2.get.restore());
+  });
+  describe('Authenticate without passReqToCallback with long live token  stored', () => {
+    let strategy;
+
+    before(() => {
+      strategy = new FacebookTokenStrategy({
+        clientID: '123',
+        clientSecret: '123',
+        getLongLivedToken: true,
+        storeLongLiveToken:true
+      }, (accessToken, refreshToken, profile, next) => {
+        assert.equal(accessToken, 'LONGLIVETOKEN');
+        assert.equal(refreshToken, 'refresh_token');
+        assert.typeOf(profile, 'object');
+        assert.typeOf(next, 'function');
+        return next(null, profile, {info: 'foo'});
+      });
+      sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
+      sinon.stub(strategy, '_getLLT', (accessToken, next) => next(null, fakeProfile, null));
+    });
+
+    after(() => strategy._oauth2.get.restore());
+  });
+
+  describe('Authenticate with passReqToCallback with long live token not stored', () => {
+    let strategy;
+
+    before(() => {
+      strategy = new FacebookTokenStrategy({
+        clientID: '123',
+        clientSecret: '123',
+        passReqToCallback: true,
+        getLongLivedToken: true
+      }, (req, accessToken, refreshToken, profile, next) => {
+        assert.typeOf(req, 'object');
+        assert.equal(accessToken, 'access_token');
+        assert.equal(req.body.longLivedToken, 'LONGLIVETOKEN');
+        assert.equal(refreshToken, 'refresh_token');
+        assert.typeOf(profile, 'object');
+        assert.typeOf(next, 'function');
+        return next(null, profile, {info: 'foo'});
+      });
+      sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
+      sinon.stub(strategy._oauth2, 'getProtectedResource', (url, accessToken, next) => next(null, JSON.stringify({
+        "access_token":"LONGLIVETOKEN",
+        "token_type":"bearer"
+      }), null));
+    });
+
+    after(() => {strategy._oauth2.get.restore(); strategy._oauth2.getProtectedResource.restore()});
+
+    it('Should properly call _verify with req', done => {
+      chai
+        .passport
+        .use(strategy)
+        .success((user, info) => {
+          assert.typeOf(user, 'object');
+          assert.typeOf(info, 'object');
+          assert.deepEqual(info, {info: 'foo'});
+          done();
+        })
+        .req(req => {
+          req.body = {
+            access_token: 'access_token',
+            refresh_token: 'refresh_token'
+          }
+        })
+        .authenticate({});
+    });
+  });
+  describe('Authenticate with passReqToCallback with long live token stored', () => {
+    let strategy;
+
+    before(() => {
+      strategy = new FacebookTokenStrategy({
+        clientID: '123',
+        clientSecret: '123',
+        passReqToCallback: true,
+        getLongLivedToken: true,
+        storeLongLiveToken:true
+      }, (req, accessToken, refreshToken, profile, next) => {
+        assert.typeOf(req, 'object');
+        assert.equal(accessToken, 'LONGLIVETOKEN');
+        assert.equal(req.body.longLivedToken, 'LONGLIVETOKEN');
+        assert.equal(refreshToken, 'refresh_token');
+        assert.typeOf(profile, 'object');
+        assert.typeOf(next, 'function');
+        return next(null, profile, {info: 'foo'});
+      });
+      sinon.stub(strategy._oauth2, 'get', (url, accessToken, next) => next(null, fakeProfile, null));
+      sinon.stub(strategy._oauth2, 'getProtectedResource', (url, accessToken, next) => next(null, fakeLongLiveToken, null));
+    });
+
+    after(() => {strategy._oauth2.get.restore(); strategy._oauth2.getProtectedResource.restore()});
+
+    it('Should properly call _verify with req', done => {
+      chai
+        .passport
+        .use(strategy)
+        .success((user, info) => {
+          assert.typeOf(user, 'object');
+          assert.typeOf(info, 'object');
+          assert.deepEqual(info, {info: 'foo'});
+          done();
+        })
+        .req(req => {
+          req.body = {
+            access_token: 'access_token',
+            refresh_token: 'refresh_token'
+          }
+        })
+        .authenticate({});
+    });
+  });
+
   describe('Failed authentications', () => {
+    it('Should properly return error on _getLLT', done => {
+      let strategy = new FacebookTokenStrategy({
+        clientID: '123',
+        clientSecret: '123',
+        getLongLivedToken: true
+      }, (accessToken, refreshToken, profile, next) => {
+        assert.equal(accessToken, 'access_token');
+        assert.equal(refreshToken, 'refresh_token');
+        assert.typeOf(profile, 'object');
+        assert.typeOf(next, 'function');
+        return next(null, profile, {info: 'foo'});
+      });
+      sinon.stub(strategy._oauth2, 'getProtectedResource', (url, access_token, next) => next(new Error('Some error occurred'),null,null));
+
+      strategy._getLLT('accessToken', (error, longLivedToken, expires) => {
+        console.log("ERROR",error);
+        assert.instanceOf(error, Error);
+        strategy._oauth2.getProtectedResource.restore();
+        done();
+      });
+    });
+    it('Should properly return error on facebook response invalid json data', done => {
+      let strategy = new FacebookTokenStrategy({
+        clientID: '123',
+        clientSecret: '123',
+        getLongLivedToken: true
+      }, (accessToken, refreshToken, profile, next) => {
+        assert.equal(accessToken, 'access_token');
+        assert.equal(refreshToken, 'refresh_token');
+        assert.typeOf(profile, 'object');
+        assert.typeOf(next, 'function');
+        return next(null, profile, {info: 'foo'});
+      });
+      sinon.stub(strategy._oauth2, 'getProtectedResource', (url, access_token, next) => next(null,"not validJsone",null));
+
+      strategy._getLLT('accessToken', (error, longLivedToken, expires) => {
+        assert.instanceOf(error, Error);
+        strategy._oauth2.getProtectedResource.restore();
+        done();
+      });
+    });
+    it('Should properly return error on facebook response invalid json data content', done => {
+      let strategy = new FacebookTokenStrategy({
+        clientID: '123',
+        clientSecret: '123',
+        getLongLivedToken: true
+      }, (accessToken, refreshToken, profile, next) => {
+        assert.equal(accessToken, 'access_token');
+        assert.equal(refreshToken, 'refresh_token');
+        assert.typeOf(profile, 'object');
+        assert.typeOf(next, 'function');
+        return next(null, profile, {info: 'foo'});
+      });
+      sinon.stub(strategy._oauth2, 'getProtectedResource', (url, access_token, next) => next(null,"{}",null));
+
+      strategy._getLLT('accessToken', (error, longLivedToken, expires) => {
+        console.log("ERROR",error);
+        assert.instanceOf(error, Error);
+        strategy._oauth2.getProtectedResource.restore();
+        done();
+      });
+    });
     it('Should properly return error on loadUserProfile', done => {
       let strategy = new FacebookTokenStrategy(STRATEGY_CONFIG, (accessToken, refreshToken, profile, next) => {
         assert.equal(accessToken, 'access_token');
@@ -297,6 +496,7 @@ describe('FacebookTokenStrategy:authenticate', () => {
         })
         .authenticate({});
     });
+
   });
 });
 
