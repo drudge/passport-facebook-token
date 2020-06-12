@@ -1,6 +1,6 @@
-import uri from 'url';
-import crypto from 'crypto';
-import { OAuth2Strategy, InternalOAuthError } from 'passport-oauth';
+const { OAuth2Strategy, InternalOAuthError } = require('passport-oauth');
+const { URL } = require('url');
+const crypto = require('crypto');
 
 /**
  * `FacebookTokenStrategy` constructor.
@@ -18,17 +18,16 @@ import { OAuth2Strategy, InternalOAuthError } from 'passport-oauth';
  * @example
  * passport.use(new FacebookTokenStrategy({
  *   clientID: '123456789',
- *   clientSecret: 'shhh-its-a-secret'
+ *   clientSecret: 'shh-its-a-secret'
  * }), (accessToken, refreshToken, profile, done) => {
  *   User.findOrCreate({facebookId: profile.id}, done);
  * });
  */
-export default class FacebookTokenStrategy extends OAuth2Strategy {
-  constructor(_options, _verify) {
+module.exports = class FacebookTokenStrategy extends OAuth2Strategy {
+  constructor (_options, _verify) {
     const options = _options || {};
     const verify = _verify;
     const _fbGraphVersion = options.fbGraphVersion || 'v2.6';
-	
 
     options.authorizationURL = options.authorizationURL || `https://www.facebook.com/${_fbGraphVersion}/dialog/oauth`;
     options.tokenURL = options.tokenURL || `https://graph.facebook.com/${_fbGraphVersion}/oauth/access_token`;
@@ -53,11 +52,11 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
    * @param {Object} req
    * @param {Object} options
    */
-  authenticate(req, options) {
+  authenticate (req, _options) {
     const accessToken = this.lookup(req, this._accessTokenField);
     const refreshToken = this.lookup(req, this._refreshTokenField);
 
-    if (!accessToken) return this.fail({message: `You should provide ${this._accessTokenField}`});
+    if (!accessToken) return this.fail({ message: `You should provide ${this._accessTokenField}` });
 
     this._loadUserProfile(accessToken, (error, profile) => {
       if (error) return this.error(error);
@@ -91,18 +90,18 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
    *   - `name.middleName`  the user's middle name
    *   - `gender`           the user's gender: `male` or `female`
    *   - `profileUrl`       the URL of the profile for the user on Facebook
-   *   - `emails`           the proxied or contact email address granted by the user
+   *   - `emails`           the contact email address granted by the user
    *
    * @param {String} accessToken
    * @param {Function} done
    */
-  userProfile(accessToken, done) {
-    let profileURL = uri.parse(this._profileURL);
+  userProfile (accessToken, done) {
+    let profileURL = new URL(this._profileURL);
 
     // For further details, refer to https://developers.facebook.com/docs/reference/api/securing-graph-api/
     if (this._enableProof) {
       const proof = crypto.createHmac('sha256', this._clientSecret).update(accessToken).digest('hex');
-      profileURL.search = `${profileURL.search ? profileURL.search + '&' : ''}appsecret_proof=${encodeURIComponent(proof) }`;
+      profileURL.search = `${profileURL.search ? profileURL.search + '&' : ''}appsecret_proof=${encodeURIComponent(proof)}`;
     }
 
     // Parse profile fields
@@ -111,20 +110,20 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
       profileURL.search = `${profileURL.search ? profileURL.search + '&' : ''}fields=${fields}`;
     }
 
-    profileURL = uri.format(profileURL);
+    profileURL = profileURL.toString();
 
-    this._oauth2.get(profileURL, accessToken, (error, body, res) => {
+    this._oauth2.get(profileURL, accessToken, (error, body, _res) => {
       if (error) return done(new InternalOAuthError('Failed to fetch user profile', error));
 
       try {
         const json = JSON.parse(body);
 
         // Get image URL based on profileImage options
-        let imageUrl = uri.parse(`https://graph.facebook.com/${this._fbGraphVersion}/${json.id}/picture`);
+        let imageUrl = new URL(`https://graph.facebook.com/${this._fbGraphVersion}/${json.id}/picture`);
         if (this._profileImage.width) imageUrl.search = `width=${this._profileImage.width}`;
         if (this._profileImage.height) imageUrl.search = `${imageUrl.search ? imageUrl.search + '&' : ''}height=${this._profileImage.height}`;
         imageUrl.search = `${imageUrl.search ? imageUrl.search : 'type=large'}`;
-        imageUrl = uri.format(imageUrl);
+        imageUrl = imageUrl.toString();
 
         const profile = {
           provider: 'facebook',
@@ -160,21 +159,21 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
    * @param {Object} req http request object
    * @returns {String} value for field within body, query, or headers
    */
-  parseOAuth2Token(req) {
+  parseOAuth2Token (req) {
     const OAuth2AuthorizationField = 'Authorization';
     const headerValue = (req.headers && (req.headers[OAuth2AuthorizationField] || req.headers[OAuth2AuthorizationField.toLowerCase()]));
 
     return (
       headerValue && (() => {
-        const bearerRE = /Bearer\ (.*)/;
-        let match = bearerRE.exec(headerValue);
+        const bearerRE = /Bearer (.*)/;
+        const match = bearerRE.exec(headerValue);
         return (match && match[1]);
       })()
     );
   }
 
   /**
-   * Performs a lookup of the param field within the request, this method handles searhing the body, query, and header.
+   * Performs a lookup of the param field within the request, this method handles searching the body, query, and header.
    * Additionally this method is RFC 2616 compliant and allows for case insensitive headers. This method additionally will
    * delegate outwards to the OAuth2Token parser to validate whether a OAuth2 bearer token has been provided.
    *
@@ -182,11 +181,11 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
    * @param {String} field
    * @returns {String} value for field within body, query, or headers
    */
-  lookup(req, field) {
+  lookup (req, field) {
     return (
-      req.body && req.body[field] ||
-      req.query && req.query[field] ||
-      req.headers && (req.headers[field] || req.headers[field.toLowerCase()]) ||
+      (req.body && req.body[field]) ||
+      (req.query && req.query[field]) ||
+      (req.headers && (req.headers[field] || req.headers[field.toLowerCase()])) ||
       this.parseOAuth2Token(req)
     );
   }
@@ -196,18 +195,18 @@ export default class FacebookTokenStrategy extends OAuth2Strategy {
    * @param {Array} _profileFields Profile fields i.e. ['id', 'email']
    * @returns {String}
    */
-  static convertProfileFields(_profileFields) {
-    let profileFields = _profileFields || [];
-    let map = {
-      'id': 'id',
-      'displayName': 'name',
-      'name': ['last_name', 'first_name', 'middle_name'],
-      'gender': 'gender',
-      'profileUrl': 'link',
-      'emails': 'email',
-      'photos': 'picture'
+  static convertProfileFields (_profileFields) {
+    const profileFields = _profileFields || [];
+    const map = {
+      id: 'id',
+      displayName: 'name',
+      name: ['last_name', 'first_name', 'middle_name'],
+      gender: 'gender',
+      profileUrl: 'link',
+      emails: 'email',
+      photos: 'picture'
     };
 
     return profileFields.reduce((acc, field) => acc.concat(map[field] || field), []).join(',');
   }
-}
+};

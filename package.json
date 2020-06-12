@@ -1,26 +1,18 @@
 {
   "name": "passport-facebook-token",
-  "version": "3.3.0",
+  "version": "4.0.0",
   "description": "Facebook token authentication strategy for Passport",
-  "main": "lib/index.js",
-  "scripts": {
-    "compile": "babel src --out-dir lib",
-    "coveralls": "cat coverage/lcov.info | coveralls",
-    "prepublish": "npm run compile",
-    "test": "babel-node ./node_modules/.bin/isparta cover _mocha"
+  "license": "MIT",
+  "main": "src/index.js",
+  "homepage": "https://github.com/drudge/passport-facebook-token#readme",
+  "bugs": {
+    "url": "https://github.com/drudge/passport-facebook-token/issues",
+    "email": "ghaiklor@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/drudge/passport-facebook-token.git"
+    "url": "https://github.com/drudge/passport-facebook-token.git"
   },
-  "keywords": [
-    "passport",
-    "facebook",
-    "auth",
-    "authn",
-    "authentication",
-    "identity"
-  ],
   "author": {
     "name": "Nicholas Penree",
     "email": "nick@penree.com",
@@ -30,37 +22,44 @@
     {
       "name": "Eugene Obrezkov",
       "email": "ghaiklor@gmail.com",
-      "url:": "https://www.facebook.com/ghaiklor"
+      "url:": "https://ghaiklor.com"
     }
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "http://github.com/drudge/passport-facebook-token/issues"
+  "keywords": [
+    "passport",
+    "facebook",
+    "auth",
+    "authn",
+    "authentication",
+    "identity"
+  ],
+  "files": [
+    "src"
+  ],
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "scripts": {
+    "coveralls": "cat coverage/lcov.info | coveralls",
+    "lint": "eslint --fix .",
+    "prepublishOnly": "npm run test && npm run lint",
+    "test": "nyc mocha"
   },
   "dependencies": {
     "passport-oauth": "1.0.0"
   },
   "devDependencies": {
-    "babel-cli": "6.4.5",
-    "babel-plugin-add-module-exports": "0.1.2",
-    "babel-preset-es2015": "6.3.13",
-    "chai": "3.4.1",
-    "chai-passport-strategy": "0.2.0",
-    "coveralls": "2.11.6",
-    "cz-conventional-changelog": "1.1.5",
-    "isparta": "4.0.0",
-    "mocha": "2.4.2",
-    "sinon": "1.17.3"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  },
-  "publishConfig": {
-    "tag": "latest"
-  },
-  "release": {
-    "branch": "master"
+    "chai": "4.2.0",
+    "chai-passport-strategy": "1.0.1",
+    "coveralls": "3.1.0",
+    "eslint": "7.2.0",
+    "eslint-config-standard": "14.1.1",
+    "eslint-plugin-import": "2.21.2",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-promise": "4.2.1",
+    "eslint-plugin-standard": "4.0.1",
+    "mocha": "8.0.1",
+    "nyc": "15.1.0",
+    "sinon": "9.0.2"
   }
 }

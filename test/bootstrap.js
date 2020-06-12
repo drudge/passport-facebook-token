@@ -1,4 +1,4 @@
-import chai from 'chai';
-import passport from 'chai-passport-strategy';
+const chai = require('chai');
+const passport = require('chai-passport-strategy');
 
 chai.use(passport);
